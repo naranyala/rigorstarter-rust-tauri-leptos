@@ -1,4 +1,7 @@
 mod app;
+mod components;
+mod logic;
+mod models;
 
 use app::*;
 use leptos::prelude::*;
@@ -15,7 +18,7 @@ fn main() {
         }
     }
 
-    mount_to_element("#app", || {
+    mount_to_body(|| {
         view! {
             <ErrorBoundary 
                 fallback=move |errors| {

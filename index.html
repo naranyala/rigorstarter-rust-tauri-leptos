@@ -4,13 +4,55 @@
     <meta charset="utf-8" />
     <title>Tauri + Leptos App</title>
     <link data-trunk rel="css" href="styles.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
     <link data-trunk rel="copy-dir" href="public" />
     <link data-trunk rel="rust" data-wasm-opt="z" />
   </head>
   <body>
     <div id="app"></div>
-    <div id="app-loader" style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; color: #666; position: absolute; width: 100%; top: 0; left: 0; z-index: 9999;">
-      <p>Loading Application...</p>
+    <div id="app-loader" style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; color: #666; position: absolute; width: 100%; top: 0; left: 0; z-index: 9999; transition: background-color 0.3s;">
+      <p id="loader-text">Loading Application...</p>
     </div>
+
+    <script>
+      // Build Failure Watchdog
+      setTimeout(() => {
+        const loader = document.getElementById('app-loader');
+        const text = document.getElementById('loader-text');
+        if (loader && text) {
+          loader.style.backgroundColor = '#fff0f0';
+          loader.style.color = '#d32f2f';
+          text.innerHTML = '<strong>Frontend Build Failed!</strong><br>Check your terminal for compilation errors.';
+          console.error('Frontend build timeout: The application failed to mount within 10 seconds.');
+        }
+      }, 10000);
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script>
+      // MutationObserver to automatically highlight new code blocks
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'childList') {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) { // Element
+                const codeBlocks = node.querySelectorAll('pre.language-rust');
+                codeBlocks.forEach((block) => Prism.highlightElement(block));
+                
+                // Also check if the node itself is a code block
+                if (node.classList && node.classList.contains('language-rust')) {
+                    Prism.highlightElement(node);
+                }
+              }
+            });
+          }
+        });
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    </script>
   </body>
 </html>

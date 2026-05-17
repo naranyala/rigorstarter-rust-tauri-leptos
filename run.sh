@@ -1,8 +1,19 @@
 #!/usr/bin/env bash
 
-# Remove frontend build artifacts to ensure fresh frontend build
-rm -rf dist
+# Ensure we are in the project root
+set -e
 
-# Start development mode (uses Cargo cache for backend)
+echo "Checking frontend build health..."
+# Run a fast build check without serving
+if ! trunk build --quiet; then
+    echo "------------------------------------------------------------"
+    echo "❌ FRONTEND BUILD FAILED"
+    echo "Please fix the Rust compilation errors in the terminal above."
+    echo "------------------------------------------------------------"
+    exit 1
+fi
+
+echo "✅ Frontend build healthy. Starting development mode..."
+rm -rf dist
 npx @tauri-apps/cli dev
 
