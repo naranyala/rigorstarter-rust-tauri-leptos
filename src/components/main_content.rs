@@ -1,10 +1,10 @@
-use leptos::prelude::*;
-use wasm_bindgen::prelude::*;
-use crate::models::RegistryItem;
 use crate::components::accordion::AccordionDemo;
+use crate::components::dashboard::Dashboard;
 use crate::components::drawer::DrawerDemo;
 use crate::components::utility_code_block::UtilityCodeBlock;
-use crate::components::dashboard::Dashboard;
+use crate::models::RegistryItem;
+use leptos::prelude::*;
+use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 extern "C" {
@@ -21,9 +21,10 @@ pub fn MainContent(
 ) -> impl IntoView {
     // Memoize the current item to prevent re-searching the registry on every render
     let current_item = Memo::new(move |_| {
-        active_demo.get().as_ref().and_then(|id| {
-            registry.get().iter().find(|i| i.id == *id).cloned()
-        })
+        active_demo
+            .get()
+            .as_ref()
+            .and_then(|id| registry.get().iter().find(|i| i.id == *id).cloned())
     });
 
     view! {

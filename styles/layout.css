@@ -1,0 +1,21 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+main {
+  min-height: calc(100vh - 4rem);
+}
+
+.placeholder {
+  margin-top: 10vh;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.placeholder h1 {
+  color: var(--text-main);
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}

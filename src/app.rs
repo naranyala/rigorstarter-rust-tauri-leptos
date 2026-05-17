@@ -1,10 +1,10 @@
+use crate::components::main_content::MainContent;
+use crate::components::navbar::Navbar;
+use crate::components::search::SearchOverlay;
+use crate::models::RegistryItem;
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
-use crate::models::RegistryItem;
-use crate::components::navbar::Navbar;
-use crate::components::search::SearchOverlay;
-use crate::components::main_content::MainContent;
 
 #[wasm_bindgen]
 extern "C" {
@@ -25,7 +25,7 @@ pub fn App() -> impl IntoView {
         if let Some(window) = web_sys::window() {
             if let Some(document) = window.document() {
                 if let Some(loader) = document.get_element_by_id("app-loader") {
-                    let _ = loader.remove();
+                    loader.remove();
                 }
             }
         }
@@ -38,7 +38,7 @@ pub fn App() -> impl IntoView {
                 if let Ok(items) = serde_wasm_bindgen::from_value::<Vec<RegistryItem>>(val) {
                     set_registry.set(items);
                 }
-            },
+            }
             Err(e) => {
                 leptos::logging::error!("Failed to fetch registry: {:?}", e);
             }
@@ -48,12 +48,12 @@ pub fn App() -> impl IntoView {
 
     view! {
         <div class="container">
-            <Navbar 
+            <Navbar
                 on_brand_click=Callback::new(move |_| set_active_demo.set(None))
                 on_search_toggle=Callback::new(move |_| set_is_search_open.update(|v| *v = !*v))
             />
 
-            <SearchOverlay 
+            <SearchOverlay
                 is_open=is_search_open
                 set_is_open=set_is_search_open
                 search_query=search_query
@@ -63,7 +63,7 @@ pub fn App() -> impl IntoView {
             />
 
             <ErrorBoundary fallback=move |_| view! { <div class="error-msg">"A critical error occurred in the main content. Please try selecting another component."</div> }>
-                <MainContent 
+                <MainContent
                     active_demo=active_demo
                     set_active_demo=Callback::new(move |id| set_active_demo.set(id))
                     registry=registry

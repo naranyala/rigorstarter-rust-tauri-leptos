@@ -10,7 +10,7 @@ pub fn ModalDemo() -> impl IntoView {
             <div class="modal-trigger-container">
                 <button class="open-modal-btn" on:click=move |_| set_is_open.set(true)>"Manage Profile"</button>
             </div>
-            
+
             <Show when=move || is_open.get()>
                 <div class="modal-overlay" on:click=move |_| set_is_open.set(false)>
                     <div class="modal-container" on:click=|ev| ev.stop_propagation()>

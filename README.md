@@ -1,42 +1,29 @@
 # Rigorstarter Rust Tauri Leptos
 
-A starter template for building high-performance desktop applications using Tauri and Leptos.
+A professional starter template for building high-performance desktop applications using Tauri and Leptos.
 
-## Tech Stack
+## Technology Stack
 
-- Tauri 2.0: Framework for building secure and lightweight desktop applications with a Rust backend.
-- Leptos 0.7: A modern, high-performance Rust web framework for the frontend.
-- Trunk: WASM bundler used to manage the Leptos frontend build process.
+- Tauri: Framework for secure and lightweight desktop applications with a Rust backend.
+- Leptos: High-performance Rust web framework for the frontend.
+- Trunk: WASM bundler for the Leptos frontend.
 
-## Prerequisites
+## Project Features
 
-Before you begin, ensure you have the following installed:
-
-- Rust: Install via rustup.
-- Node.js: Required for the Tauri CLI.
-- Trunk: Install using `cargo install trunk`.
-- WASM Target: Add the target using `rustup target add wasm32-unknown-unknown`.
-- System Dependencies: Follow the official Tauri installation guide for your operating system.
+- Integrated Registry: Dynamic discovery of components and system utilities.
+- Source Code Viewer: Ability to view the Rust source of system utilities directly in the UI.
+- Responsive Design: Modern UI with a focus on developer experience.
+- Secure Backend: Validated file system access and command handling.
 
 ## Getting Started
 
 ### Development
 
-To start the application in development mode, run:
+To start the application in development mode:
 
 ```bash
 sh run.sh
 ```
-
-Alternatively, you can use the Tauri CLI directly:
-
-```bash
-npx @tauri-apps/cli dev
-```
-
-This command will:
-1. Start the Leptos frontend using `trunk serve`.
-2. Launch the Tauri desktop window.
 
 ### Production Build
 
@@ -48,14 +35,16 @@ npx @tauri-apps/cli build
 
 ## Project Structure
 
-- `src/`: Contains the Leptos frontend source code.
-- `src-tauri/`: Contains the Tauri backend Rust code and configuration.
+- `src/`: Leptos frontend source code.
+- `src-tauri/`: Tauri backend Rust code and configuration.
+- `docs/`: Comprehensive project documentation.
 - `Trunk.toml`: Configuration for the Trunk WASM bundler.
-- `src-tauri/tauri.conf.json`: Configuration for the Tauri application.
-- `index.html`: Entry point for the Leptos frontend.
+- `index.html`: Entry point for the frontend.
 
-## Recommended IDE Setup
+## Documentation
 
-- Visual Studio Code
-- Tauri Extension
-- rust-analyzer
+Detailed guides are available in the `docs/` directory:
+- Architecture: Overview of the system design.
+- Frontend: Guide for adding components.
+- Backend: Guide for adding commands and utilities.
+- Deployment: Build and distribution instructions.

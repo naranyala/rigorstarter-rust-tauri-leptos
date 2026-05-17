@@ -1,8 +1,13 @@
 use crate::models::RegistryItem;
 
-pub fn filter_registry(registry: &[RegistryItem], query: &str, category: &str) -> Vec<(String, String)> {
+pub fn filter_registry(
+    registry: &[RegistryItem],
+    query: &str,
+    category: &str,
+) -> Vec<(String, String)> {
     let query_lower = query.to_lowercase();
-    registry.iter()
+    registry
+        .iter()
         .filter(|item| item.category == category && item.name.to_lowercase().contains(&query_lower))
         .map(|item| (item.name.clone(), item.id.clone()))
         .collect()
@@ -14,9 +19,27 @@ mod tests {
 
     fn mock_registry() -> Vec<RegistryItem> {
         vec![
-            RegistryItem { name: "Accordion".into(), id: "acc".into(), category: "component".into(), status: "pinned".into(), line_count: 10 },
-            RegistryItem { name: "Drawer".into(), id: "draw".into(), category: "component".into(), status: "dev".into(), line_count: 20 },
-            RegistryItem { name: "Network".into(), id: "net".into(), category: "utility".into(), status: "pinned".into(), line_count: 30 },
+            RegistryItem {
+                name: "Accordion".into(),
+                id: "acc".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "Drawer".into(),
+                id: "draw".into(),
+                category: "component".into(),
+                status: "dev".into(),
+                line_count: 20,
+            },
+            RegistryItem {
+                name: "Network".into(),
+                id: "net".into(),
+                category: "utility".into(),
+                status: "pinned".into(),
+                line_count: 30,
+            },
         ]
     }
 
@@ -36,6 +59,28 @@ mod tests {
     }
 
     #[test]
+    fn test_filter_multiple_results() {
+        let reg = vec![
+            RegistryItem {
+                name: "Accordion".into(),
+                id: "acc".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "Accent".into(),
+                id: "acc2".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 20,
+            },
+        ];
+        let res = filter_registry(&reg, "Acc", "component");
+        assert_eq!(res.len(), 2);
+    }
+
+    #[test]
     fn test_filter_no_results() {
         let reg = mock_registry();
         let res = filter_registry(&reg, "Unknown", "component");
@@ -47,5 +92,20 @@ mod tests {
         let reg = mock_registry();
         let res = filter_registry(&reg, "Network", "component"); // Network is a utility
         assert!(res.is_empty());
+    }
+
+    #[test]
+    fn test_filter_empty_registry() {
+        let reg = vec![];
+        let res = filter_registry(&reg, "Acc", "component");
+        assert!(res.is_empty());
+    }
+
+    #[test]
+    fn test_filter_empty_query() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, "", "component");
+        // Should return all components
+        assert_eq!(res.len(), 2);
     }
 }

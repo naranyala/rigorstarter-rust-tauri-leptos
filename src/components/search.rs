@@ -1,6 +1,6 @@
-use leptos::prelude::*;
-use crate::models::RegistryItem;
 use crate::logic::filter_registry;
+use crate::models::RegistryItem;
+use leptos::prelude::*;
 
 #[component]
 pub fn SearchOverlay(
@@ -11,21 +11,17 @@ pub fn SearchOverlay(
     registry: ReadSignal<Vec<RegistryItem>>,
     set_active_demo: Callback<Option<String>>,
 ) -> impl IntoView {
-    let filtered_demos = move || {
-        filter_registry(&registry.get(), &search_query.get(), "component")
-    };
+    let filtered_demos = move || filter_registry(&registry.get(), &search_query.get(), "component");
 
-    let filtered_utils = move || {
-        filter_registry(&registry.get(), &search_query.get(), "utility")
-    };
+    let filtered_utils = move || filter_registry(&registry.get(), &search_query.get(), "utility");
 
     view! {
         <div class="search-overlay" style:display=move || if is_open.get() { "flex" } else { "none" }>
             <div class="search-container">
                 <div class="search-input-wrapper">
-                    <input 
-                        type="text" 
-                        placeholder="Search components or utilities..." 
+                    <input
+                        type="text"
+                        placeholder="Search components or utilities..."
                         on:input=move |ev| set_search_query.set(event_target_value(&ev))
                     />
                     <button class="close-search" on:click=move |_| set_is_open.set(false)>"✕"</button>
@@ -34,12 +30,12 @@ pub fn SearchOverlay(
                     {move || {
                         let filtered = filtered_demos();
                         let utils = filtered_utils();
-                        
+
                         if filtered.is_empty() && utils.is_empty() {
                             view! { <div class="no-results">"No results found"</div> }.into_any()
                         } else {
                             let mut results = Vec::new();
-                            
+
                             if !filtered.is_empty() {
                                 results.push(view! { <div class="search-section-title">"Components"</div> }.into_any());
                                 let component_results = filtered.into_iter().map(|(name, id)| {

@@ -1,14 +1,35 @@
-use leptos::prelude::*;
 use crate::models::RegistryItem;
+use leptos::prelude::*;
 
 #[component]
 pub fn Dashboard(
     items: ReadSignal<Vec<RegistryItem>>,
     set_active_demo: Callback<Option<String>>,
 ) -> impl IntoView {
-    let pinned = move || items.get().iter().filter(|i| i.status == "pinned").cloned().collect::<Vec<_>>();
-    let in_dev = move || items.get().iter().filter(|i| i.status == "in-development").cloned().collect::<Vec<_>>();
-    let archives = move || items.get().iter().filter(|i| i.status == "archives").cloned().collect::<Vec<_>>();
+    let pinned = move || {
+        items
+            .get()
+            .iter()
+            .filter(|i| i.status == "pinned")
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    let in_dev = move || {
+        items
+            .get()
+            .iter()
+            .filter(|i| i.status == "in-development")
+            .cloned()
+            .collect::<Vec<_>>()
+    };
+    let archives = move || {
+        items
+            .get()
+            .iter()
+            .filter(|i| i.status == "archives")
+            .cloned()
+            .collect::<Vec<_>>()
+    };
 
     let render_all_list = move || {
         let all_items = items.get();
@@ -30,7 +51,9 @@ pub fn Dashboard(
         }
     };
 
-    let render_cards = move |list: Vec<RegistryItem>, category_label: String, status_class: String| {
+    let render_cards = move |list: Vec<RegistryItem>,
+                             category_label: String,
+                             status_class: String| {
         view! {
             <div class="dashboard-section">
                 <h3 class="section-title">{category_label}</h3>
@@ -64,11 +87,12 @@ pub fn Dashboard(
 
             <div class="dashboard-content">
                 {move || {
-                    let mut content = Vec::new();
-                    content.push(render_cards(pinned(), "Featured & Pinned".to_string(), "status-pinned".to_string()).into_any());
-                    content.push(render_cards(in_dev(), "Coming Soon / In Dev".to_string(), "status-dev".to_string()).into_any());
-                    content.push(render_cards(archives(), "Archived".to_string(), "status-archive".to_string()).into_any());
-                    content.push(render_all_list().into_any());
+                    let content = vec![
+                        render_cards(pinned(), "Featured & Pinned".to_string(), "status-pinned".to_string()).into_any(),
+                        render_cards(in_dev(), "Coming Soon / In Dev".to_string(), "status-dev".to_string()).into_any(),
+                        render_cards(archives(), "Archived".to_string(), "status-archive".to_string()).into_any(),
+                        render_all_list().into_any(),
+                    ];
                     content.into_view().into_any()
                 }}
             </div>

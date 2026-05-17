@@ -1,0 +1,116 @@
+.tabs-demo {
+  max-width: 700px;
+  margin: 2rem auto;
+  text-align: left;
+}
+
+.tabs-container {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.tabs-header {
+  display: flex;
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 1rem;
+}
+
+.tab-btn {
+  padding: 1rem 1.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: all 0.2s;
+  border-bottom: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+  background-color: var(--accent);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background-color: var(--bg-color);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tabs-content {
+  padding: 2rem;
+  min-height: 300px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+.tab-panel h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+}
+
+.tab-panel p {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.tab-form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tab-form-group label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.tab-form-group input, .tab-form-group select {
+  padding: 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.4rem;
+  background-color: var(--secondary-bg);
+}
+
+.switch-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.switch-label {
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.switch {
+  width: 40px;
+  height: 20px;
+  background-color: var(--primary);
+  border-radius: 10px;
+  position: relative;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  right: 2px;
+  top: 2px;
+  width: 16px;
+  height: 16px;
+  background-color: white;
+  border-radius: 50%;
+}

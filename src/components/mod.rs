@@ -1,10 +1,10 @@
-pub mod navbar;
-pub mod search;
-pub mod dashboard;
-pub mod result_view;
-pub mod utility_code_block;
 pub mod accordion;
+pub mod dashboard;
 pub mod drawer;
-pub mod tabs;
-pub mod modal;
 pub mod main_content;
+pub mod modal;
+pub mod navbar;
+pub mod result_view;
+pub mod search;
+pub mod tabs;
+pub mod utility_code_block;

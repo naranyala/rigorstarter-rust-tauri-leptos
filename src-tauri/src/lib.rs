@@ -1,10 +1,16 @@
-mod utils;
 mod errors;
 #[cfg(test)]
 mod lib_tests;
+mod utils;
 
 use errors::AppError;
 use std::fs;
+
+fn get_file_line_count(path: String) -> Result<usize, AppError> {
+    fs::read_to_string(path)
+        .map(|s| s.lines().count())
+        .map_err(|e| AppError::NotFound(e.to_string()))
+}
 
 #[derive(serde::Serialize)]
 pub struct RegistryItem {
@@ -37,8 +43,9 @@ fn get_registry() -> Result<Vec<RegistryItem>, AppError> {
                 format!("src-tauri/src/utils/{}.rs", id),
                 format!("src/utils/{}.rs", id),
             ];
-            
-            paths.into_iter()
+
+            paths
+                .into_iter()
                 .find_map(|path| fs::read_to_string(path).ok())
                 .map(|s| s.lines().count())
                 .unwrap_or(0)
@@ -61,9 +68,11 @@ fn get_registry() -> Result<Vec<RegistryItem>, AppError> {
 #[tauri::command]
 fn get_utility_source(utility: &str) -> Result<String, AppError> {
     if utility.contains("..") || utility.contains('/') || utility.contains('\\') {
-        return Err(AppError::InvalidArgument("Invalid utility name".to_string()));
+        return Err(AppError::InvalidArgument(
+            "Invalid utility name".to_string(),
+        ));
     }
-    
+
     let paths = vec![
         format!("src-tauri/src/utils/{}.rs", utility),
         format!("src/utils/{}.rs", utility),
@@ -75,7 +84,10 @@ fn get_utility_source(utility: &str) -> Result<String, AppError> {
         }
     }
 
-    Err(AppError::NotFound(format!("Utility source for '{}' not found", utility)))
+    Err(AppError::NotFound(format!(
+        "Utility source for '{}' not found",
+        utility
+    )))
 }
 
 #[tauri::command]
@@ -86,10 +98,14 @@ fn log_message(message: String) {
 #[tauri::command]
 fn greet(name: &str) -> Result<String, AppError> {
     if name.trim().is_empty() {
-        return Err(AppError::InvalidArgument("Name cannot be empty!".to_string()));
+        return Err(AppError::InvalidArgument(
+            "Name cannot be empty!".to_string(),
+        ));
     }
     if name.to_lowercase() == "error" {
-        return Err(AppError::Internal("You entered the forbidden word 'error'!".to_string()));
+        return Err(AppError::Internal(
+            "You entered the forbidden word 'error'!".to_string(),
+        ));
     }
     Ok(format!("Hello, {}! You've been greeted from Rust!", name))
 }
@@ -98,7 +114,12 @@ fn greet(name: &str) -> Result<String, AppError> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet, get_utility_source, get_registry, log_message])
+        .invoke_handler(tauri::generate_handler![
+            greet,
+            get_utility_source,
+            get_registry,
+            log_message
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
