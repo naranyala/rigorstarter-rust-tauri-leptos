@@ -101,4 +101,26 @@ mod tests {
         let res = greet("error");
         assert!(res.is_err());
     }
+
+    #[test]
+    fn test_get_system_info() {
+        let res = get_system_info();
+        assert!(res.is_ok());
+        let val = res.unwrap();
+        assert!(val["hostname"].as_str().is_some());
+        assert!(val["distro"].as_str().is_some());
+        assert!(val["paths"]["config"].as_str().is_some());
+    }
+
+    #[test]
+    fn test_get_system_status() {
+        let res = get_system_status();
+        assert!(res.is_ok());
+        let val = res.unwrap();
+        assert!(val["system"].is_object());
+        assert!(val["resources"].is_object());
+        assert!(val["session"].is_object());
+        assert!(val["network"].is_array());
+        assert!(val["storage"].is_object() || val["storage"].is_null());
+    }
 }

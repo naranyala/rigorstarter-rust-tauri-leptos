@@ -1,10 +1,15 @@
 mod errors;
 #[cfg(test)]
 mod lib_tests;
+mod syslib;
 mod utils;
 
 use errors::AppError;
 use std::fs;
+use syslib::{
+    get_disk_usage, get_local_ips, get_session_info, get_system_metrics, send_notification,
+    Notification, SystemInfo, XdgPaths,
+};
 
 fn get_file_line_count(path: String) -> Result<usize, AppError> {
     fs::read_to_string(path)
@@ -96,6 +101,60 @@ fn log_message(message: String) {
 }
 
 #[tauri::command]
+async fn notify_user(title: String, body: String) -> Result<(), AppError> {
+    let note = Notification {
+        title,
+        body,
+        icon: None,
+    };
+
+    send_notification(note)
+        .await
+        .map_err(|e| AppError::Internal(e.to_string()))
+}
+
+#[tauri::command]
+fn get_system_status() -> Result<serde_json::Value, AppError> {
+    let info = SystemInfo::collect();
+    let (mem, cpu) = get_system_metrics();
+    let session = get_session_info();
+    let nets = get_local_ips();
+    let disk = get_disk_usage("/");
+
+    Ok(serde_json::json!({
+        "system": {
+            "hostname": info.hostname,
+            "kernel": info.kernel,
+            "distro": info.distro,
+        },
+        "resources": {
+            "memory": mem,
+            "cpu": cpu,
+        },
+        "session": session,
+        "network": nets,
+        "storage": disk,
+    }))
+}
+
+#[tauri::command]
+fn get_system_info() -> Result<serde_json::Value, AppError> {
+    let info = SystemInfo::collect();
+    let paths = XdgPaths::new("rigorstarter");
+
+    Ok(serde_json::json!({
+        "hostname": info.hostname,
+        "kernel": info.kernel,
+        "distro": info.distro,
+        "paths": {
+            "config": paths.config_dir,
+            "data": paths.data_dir,
+            "cache": paths.cache_dir,
+        }
+    }))
+}
+
+#[tauri::command]
 fn greet(name: &str) -> Result<String, AppError> {
     if name.trim().is_empty() {
         return Err(AppError::InvalidArgument(
@@ -118,7 +177,10 @@ pub fn run() {
             greet,
             get_utility_source,
             get_registry,
-            log_message
+            log_message,
+            get_system_info,
+            get_system_status,
+            notify_user
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -1,6 +1,8 @@
 use crate::components::accordion::AccordionDemo;
 use crate::components::dashboard::Dashboard;
 use crate::components::drawer::DrawerDemo;
+use crate::components::theme_demo::ThemeDemo;
+use crate::components::toast_demo::ToastDemo;
 use crate::components::utility_code_block::UtilityCodeBlock;
 use crate::models::RegistryItem;
 use leptos::prelude::*;
@@ -59,10 +61,20 @@ pub fn MainContent(
                 <crate::components::modal::ModalDemo />
             </div>
 
-            // 6. Dynamic Utility Slot
+            // 6. Theme Slot
+            <div style:display=move || if active_demo.get().as_deref() == Some("theme") { "block" } else { "none" }>
+                <ThemeDemo />
+            </div>
+
+            // 7. Toast Slot
+            <div style:display=move || if active_demo.get().as_deref() == Some("toast") { "block" } else { "none" }>
+                <ToastDemo />
+            </div>
+
+            // 8. Dynamic Utility Slot
             <div style:display=move || {
                 let active = active_demo.get();
-                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") {
+                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") {
                     "block"
                 } else {
                     "none"

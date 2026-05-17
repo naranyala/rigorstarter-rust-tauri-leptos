@@ -7,4 +7,6 @@ pub mod navbar;
 pub mod result_view;
 pub mod search;
 pub mod tabs;
+pub mod theme_demo;
+pub mod toast_demo;
 pub mod utility_code_block;
