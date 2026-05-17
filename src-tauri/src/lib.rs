@@ -1,20 +1,26 @@
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 mod utils;
+mod errors;
+
+use errors::AppError;
 use std::fs;
 
 #[tauri::command]
-fn get_utility_source(utility: &str) -> Result<String, String> {
+fn get_utility_source(utility: &str) -> Result<String, AppError> {
+    if utility.contains("..") || utility.contains('/') || utility.contains('\\') {
+        return Err(AppError::InvalidArgument("Invalid utility name".to_string()));
+    }
+    
     let path = format!("src-tauri/src/utils/{}.rs", utility);
-    fs::read_to_string(path).map_err(|e| e.to_string())
+    fs::read_to_string(path).map_err(AppError::from)
 }
 
 #[tauri::command]
-fn greet(name: &str) -> Result<String, String> {
+fn greet(name: &str) -> Result<String, AppError> {
     if name.trim().is_empty() {
-        return Err("Name cannot be empty!".to_string());
+        return Err(AppError::InvalidArgument("Name cannot be empty!".to_string()));
     }
     if name.to_lowercase() == "error" {
-        return Err("You entered the forbidden word 'error'!".to_string());
+        return Err(AppError::Internal("You entered the forbidden word 'error'!".to_string()));
     }
     Ok(format!("Hello, {}! You've been greeted from Rust!", name))
 }

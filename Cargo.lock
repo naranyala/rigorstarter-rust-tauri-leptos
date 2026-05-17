@@ -3366,6 +3366,7 @@ dependencies = [
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",
+ "thiserror 1.0.69",
 ]
 
 [[package]]
@@ -3380,6 +3381,7 @@ dependencies = [
  "serde_json",
  "wasm-bindgen",
  "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]
