@@ -11,9 +11,10 @@ pub fn ResultView(
     } else {
         match result {
             Ok(_) => children().into_any(),
-            Err(e) => view! { <div class="error-msg" style="padding: 1rem; border: 1px solid #f5c6cb; background: #f8d7da; color: #721c24; border-radius: 4px;">
+            Err(e) => view! { <div class="error-banner">
                 <strong>"Error: "</strong> {e}
-            </div> }.into_any(),
+            </div> }
+            .into_any(),
         }
     }
 }

@@ -20,10 +20,18 @@ pub fn App() -> impl IntoView {
     let (active_demo, set_active_demo) = signal(Option::<String>::None);
     let (registry, set_registry) = signal(Vec::<RegistryItem>::new());
     let (is_loading_registry, set_is_loading_registry) = signal(true);
+    let (is_dark_mode, set_is_dark_mode) = signal(false);
 
     Effect::new(move |_| {
         if let Some(window) = web_sys::window() {
             if let Some(document) = window.document() {
+                if let Some(body) = document.body() {
+                    if is_dark_mode.get() {
+                        body.class_list().add_1("dark").unwrap();
+                    } else {
+                        body.class_list().remove_1("dark").unwrap();
+                    }
+                }
                 if let Some(loader) = document.get_element_by_id("app-loader") {
                     loader.remove();
                 }
@@ -51,6 +59,8 @@ pub fn App() -> impl IntoView {
             <Navbar
                 on_brand_click=Callback::new(move |_| set_active_demo.set(None))
                 on_search_toggle=Callback::new(move |_| set_is_search_open.update(|v| *v = !*v))
+                on_theme_toggle=Callback::new(move |_| set_is_dark_mode.update(|v| *v = !*v))
+                is_dark_mode=is_dark_mode
             />
 
             <SearchOverlay

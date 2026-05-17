@@ -30,7 +30,7 @@ pub fn MainContent(
     });
 
     view! {
-        <div style="padding: 2rem; text-align: center;">
+        <div class="main-content-wrapper">
             // 1. Dashboard Slot
             <div style:display=move || if active_demo.get().is_none() { "block" } else { "none" }>
                 <Show

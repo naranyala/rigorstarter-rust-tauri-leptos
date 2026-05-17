@@ -137,7 +137,7 @@ pub fn ToastDemo() -> impl IntoView {
 #[component]
 fn DeeplyNestedNotifier() -> impl IntoView {
     view! {
-        <div style="margin-top: 40px; padding: 20px; border: 1px dashed #ccc; border-radius: 8px;">
+        <div class="deep-notifier-container">
             <p>"I am a deeply nested component."</p>
             <NotifyButton label="Notify from Deep".to_string() toast_type=ToastType::Info />
         </div>

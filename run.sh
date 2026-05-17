@@ -17,6 +17,9 @@ if ! cargo clippy -- -D warnings; then
 fi
 
 echo "Checking frontend build health..."
+# Update CSS imports in index.html programmatically
+./scripts/generate_css_imports.sh
+
 # Run a fast build check without serving
 if ! trunk build --quiet; then
     echo "------------------------------------------------------------"

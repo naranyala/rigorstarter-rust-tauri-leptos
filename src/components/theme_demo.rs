@@ -68,7 +68,7 @@ fn NestedComponent() -> impl IntoView {
     let theme_ctx = use_context::<ThemeContext>().expect("ThemeContext should be provided");
 
     view! {
-        <div style="margin-top: 10px; font-style: italic; opacity: 0.8">
+        <div class="nested-theme-info">
             {move || format!("Current theme is: {}", if theme_ctx.theme.get() == AppTheme::Light { "Light" } else { "Dark" })}
         </div>
     }
