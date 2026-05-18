@@ -1,13 +1,17 @@
-use crate::models::RegistryItem;
+use crate::core::models::RegistryItem;
+use crate::services::{NavigationService, RegistryService};
 use leptos::prelude::*;
 
 #[component]
-pub fn Dashboard(
-    items: ReadSignal<Vec<RegistryItem>>,
-    set_active_demo: Callback<Option<String>>,
-) -> impl IntoView {
+pub fn Dashboard() -> impl IntoView {
+    let registry_service =
+        use_context::<RegistryService>().expect("RegistryService should be provided");
+    let nav_service =
+        use_context::<NavigationService>().expect("NavigationService should be provided");
+
     let pinned = move || {
-        items
+        registry_service
+            .items
             .get()
             .iter()
             .filter(|i| i.status == "pinned")
@@ -15,7 +19,8 @@ pub fn Dashboard(
             .collect::<Vec<_>>()
     };
     let in_dev = move || {
-        items
+        registry_service
+            .items
             .get()
             .iter()
             .filter(|i| i.status == "in-development")
@@ -23,7 +28,8 @@ pub fn Dashboard(
             .collect::<Vec<_>>()
     };
     let archives = move || {
-        items
+        registry_service
+            .items
             .get()
             .iter()
             .filter(|i| i.status == "archives")
@@ -40,7 +46,7 @@ pub fn Dashboard(
                         let id = item.id.clone();
                         let name = item.name.clone();
                         view! {
-                            <a class="simple-item-link" on:click=move |_| set_active_demo.run(Some(id.clone()))>
+                            <a class="simple-item-link" on:click=move |_| nav_service.navigate_to(Some(id.clone()))>
                                 {name}
                             </a>
                         }

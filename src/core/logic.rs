@@ -1,4 +1,4 @@
-use crate::models::RegistryItem;
+use crate::core::models::RegistryItem;
 
 pub fn filter_registry(
     registry: &[RegistryItem],
