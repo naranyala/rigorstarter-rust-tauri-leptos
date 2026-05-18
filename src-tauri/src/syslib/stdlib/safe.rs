@@ -1,6 +1,6 @@
 use super::raw;
+use std::ffi::CStr;
 use std::ffi::CString;
-use std::os::raw::c_int;
 
 pub struct DesktopStd;
 
@@ -18,7 +18,7 @@ impl DesktopStd {
     }
 
     pub fn kill_process(pid: i32) -> Result<(), String> {
-        let res = raw::std_kill_process(pid as c_int);
+        let res = raw::std_kill_process(pid);
         if res == 0 {
             Ok(())
         } else {
@@ -30,7 +30,7 @@ impl DesktopStd {
         let c_title = CString::new(title).map_err(|_| "Invalid title")?;
         let c_msg = CString::new(message).map_err(|_| "Invalid message")?;
 
-        let res = unsafe { raw::std_send_notification(c_title.as_ptr(), c_msg.as_ptr()) };
+        let res = raw::std_send_notification(c_title.as_ptr(), c_msg.as_ptr());
 
         if res == 0 {
             Ok(())
@@ -41,7 +41,7 @@ impl DesktopStd {
 
     pub fn get_env(name: &str) -> Option<String> {
         let c_name = CString::new(name).ok()?;
-        let ptr = unsafe { raw::std_get_env_var(c_name.as_ptr()) };
+        let ptr = raw::std_get_env_var(c_name.as_ptr());
         if ptr.is_null() {
             None
         } else {
@@ -49,5 +49,3 @@ impl DesktopStd {
         }
     }
 }
-
-use std::ffi::CStr;

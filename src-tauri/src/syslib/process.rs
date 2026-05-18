@@ -1,5 +1,5 @@
 use std::io;
-use std::process::{Command, Output};
+use std::process::Command;
 
 #[derive(Debug)]
 pub enum ProcessError {

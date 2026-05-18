@@ -153,6 +153,28 @@ mod tests {
     }
 
     #[test]
+    fn test_filter_empty_category() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, "Acc", "");
+        assert!(res.is_empty());
+    }
+
+    #[test]
+    fn test_filter_category_no_query() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, "", "component");
+        assert_eq!(res.len(), 2);
+    }
+
+    #[test]
+    fn test_filter_partial_match() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, "ordion", "component");
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].0, "Accordion");
+    }
+
+    #[test]
     fn test_filter_special_characters() {
         let reg = vec![RegistryItem {
             name: "Component (Special) @!".into(),

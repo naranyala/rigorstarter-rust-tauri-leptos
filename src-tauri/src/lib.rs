@@ -1,15 +1,20 @@
+#![allow(dead_code)]
+
 mod errors;
 #[cfg(test)]
 mod lib_tests;
+mod menu;
 mod syslib;
 mod utils;
 
 use errors::AppError;
+use menu::setup_main_menu;
 use std::fs;
 use syslib::{
     get_disk_usage, get_local_ips, get_session_info, get_system_metrics, send_notification,
     Notification, SystemInfo, XdgPaths,
 };
+use tauri::Manager;
 
 fn get_file_line_count(path: String) -> Result<usize, AppError> {
     fs::read_to_string(path)
@@ -169,10 +174,80 @@ fn greet(name: &str) -> Result<String, AppError> {
     Ok(format!("Hello, {}! You've been greeted from Rust!", name))
 }
 
+#[tauri::command]
+async fn open_file_dialog(app: tauri::AppHandle) -> Result<Option<String>, AppError> {
+    use tauri_plugin_dialog::DialogExt;
+    let file_path = app
+        .dialog()
+        .file()
+        .set_title("Select a file")
+        .blocking_pick_file();
+    Ok(file_path.map(|p| p.to_string()))
+}
+
+#[tauri::command]
+async fn open_directory_dialog(app: tauri::AppHandle) -> Result<Option<String>, AppError> {
+    use tauri_plugin_dialog::DialogExt;
+    let dir_path = app
+        .dialog()
+        .file()
+        .set_title("Select a directory")
+        .blocking_pick_folder();
+    Ok(dir_path.map(|p| p.to_string()))
+}
+
+#[tauri::command]
+fn show_message_dialog(
+    app: tauri::AppHandle,
+    title: String,
+    message: String,
+) -> Result<(), AppError> {
+    use tauri_plugin_dialog::DialogExt;
+    app.dialog().message(message).title(title).show(|_| {});
+    Ok(())
+}
+
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::TrayIconBuilder,
+};
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            setup_main_menu(app.handle())?;
+
+            // 1. Create Menu Items
+            let show_window = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
+            let quit_app = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+
+            // 2. Build the Menu
+            let menu = Menu::with_items(app, &[&show_window, &quit_app])?;
+
+            // 3. Build the Tray Icon
+            let _tray = TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .menu(&menu)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    "quit" => {
+                        app.exit(0);
+                    }
+                    _ => {}
+                })
+                .build(app)
+                .unwrap();
+
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             greet,
             get_utility_source,
@@ -180,7 +255,10 @@ pub fn run() {
             log_message,
             get_system_info,
             get_system_status,
-            notify_user
+            notify_user,
+            open_file_dialog,
+            open_directory_dialog,
+            show_message_dialog
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

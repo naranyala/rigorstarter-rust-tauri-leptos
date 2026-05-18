@@ -43,11 +43,8 @@ mod tests {
 
     #[test]
     fn test_session_null_handling() {
-        // Test the raw logic for null handles
-        unsafe {
-            let id = raw::mock_c_session_get_id(std::ptr::null_mut());
-            assert_eq!(id, -1);
-        }
+        let id = raw::mock_c_session_get_id(std::ptr::null_mut());
+        assert_eq!(id, -1);
     }
 
     #[test]

@@ -38,3 +38,58 @@ pub async fn send_notification(note: Notification) -> Result<(), Box<dyn Error>>
 
     Ok(())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_notification_struct_basic() {
+        let note = Notification {
+            title: "Test Title".into(),
+            body: "Test Body".into(),
+            icon: None,
+        };
+        assert_eq!(note.title, "Test Title");
+        assert_eq!(note.body, "Test Body");
+        assert!(note.icon.is_none());
+    }
+
+    #[test]
+    fn test_notification_with_icon() {
+        let note = Notification {
+            title: "Alert".into(),
+            body: "Something happened".into(),
+            icon: Some("dialog-warning".into()),
+        };
+        assert_eq!(note.icon.unwrap(), "dialog-warning");
+    }
+
+    #[test]
+    fn test_notification_empty_fields() {
+        let note = Notification {
+            title: String::new(),
+            body: String::new(),
+            icon: None,
+        };
+        assert!(note.title.is_empty());
+        assert!(note.body.is_empty());
+    }
+
+    #[test]
+    fn test_notification_clone() {
+        let note = Notification {
+            title: "Clone".into(),
+            body: "Test".into(),
+            icon: Some("info".into()),
+        };
+        let cloned = Notification {
+            title: note.title.clone(),
+            body: note.body.clone(),
+            icon: note.icon.clone(),
+        };
+        assert_eq!(note.title, cloned.title);
+        assert_eq!(note.body, cloned.body);
+        assert_eq!(note.icon, cloned.icon);
+    }
+}

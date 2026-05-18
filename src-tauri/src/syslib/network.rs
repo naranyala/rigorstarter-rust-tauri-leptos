@@ -36,3 +36,61 @@ pub fn get_local_ips() -> Vec<NetworkInterface> {
         Err(_) => vec![],
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_get_local_ips_returns_vec() {
+        let result = get_local_ips();
+        // The result may be empty if 'ip' command is not available (e.g., containers)
+        // but it should never panic
+        assert!(result.is_empty() || result.iter().all(|iface| !iface.name.is_empty()));
+    }
+
+    #[test]
+    fn test_network_interface_fields() {
+        let iface = NetworkInterface {
+            name: "eth0".to_string(),
+            ip: Some("192.168.1.1".parse().unwrap()),
+            status: "up".to_string(),
+        };
+        assert_eq!(iface.name, "eth0");
+        assert!(iface.ip.is_some());
+        assert_eq!(iface.status, "up");
+    }
+
+    #[test]
+    fn test_network_interface_no_ip() {
+        let iface = NetworkInterface {
+            name: "lo".to_string(),
+            ip: None,
+            status: "down".to_string(),
+        };
+        assert!(iface.ip.is_none());
+    }
+
+    #[test]
+    fn test_network_interface_serialize() {
+        let iface = NetworkInterface {
+            name: "wlan0".to_string(),
+            ip: Some("10.0.0.1".parse().unwrap()),
+            status: "up".to_string(),
+        };
+        let json = serde_json::to_string(&iface).unwrap();
+        assert!(json.contains("wlan0"));
+        assert!(json.contains("10.0.0.1"));
+        assert!(json.contains("up"));
+    }
+
+    #[test]
+    fn test_network_interface_ipv6() {
+        let iface = NetworkInterface {
+            name: "eth0".to_string(),
+            ip: Some("fe80::1".parse().unwrap()),
+            status: "up".to_string(),
+        };
+        assert_eq!(iface.ip.unwrap().to_string(), "fe80::1");
+    }
+}
