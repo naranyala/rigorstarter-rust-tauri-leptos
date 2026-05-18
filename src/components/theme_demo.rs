@@ -1,6 +1,6 @@
 use leptos::prelude::*;
 
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum AppTheme {
     Light,
     Dark,
@@ -71,6 +71,88 @@ fn NestedComponent() -> impl IntoView {
         <div class="nested-theme-info">
             {move || format!("Current theme is: {}", if theme_ctx.theme.get() == AppTheme::Light { "Light" } else { "Dark" })}
         </div>
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_app_theme_variants() {
+        assert_ne!(AppTheme::Light, AppTheme::Dark);
+    }
+
+    #[test]
+    fn test_theme_context_initial_light() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Light),
+        };
+        assert_eq!(ctx.theme.get(), AppTheme::Light);
+    }
+
+    #[test]
+    fn test_theme_context_initial_dark() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Dark),
+        };
+        assert_eq!(ctx.theme.get(), AppTheme::Dark);
+    }
+
+    #[test]
+    fn test_theme_context_toggle_light_to_dark() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Light),
+        };
+        ctx.toggle();
+        assert_eq!(ctx.theme.get(), AppTheme::Dark);
+    }
+
+    #[test]
+    fn test_theme_context_toggle_dark_to_light() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Dark),
+        };
+        ctx.toggle();
+        assert_eq!(ctx.theme.get(), AppTheme::Light);
+    }
+
+    #[test]
+    fn test_theme_context_multiple_toggles() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Light),
+        };
+        for i in 0..10 {
+            ctx.toggle();
+            let expected = if i % 2 == 0 {
+                AppTheme::Dark
+            } else {
+                AppTheme::Light
+            };
+            assert_eq!(ctx.theme.get(), expected, "Failed at toggle {}", i + 1);
+        }
+    }
+
+    #[test]
+    fn test_theme_context_clone() {
+        let _rt = setup_runtime();
+        let ctx = ThemeContext {
+            theme: RwSignal::new(AppTheme::Light),
+        };
+        let cloned = ctx;
+        cloned.toggle();
+        // RwSignal is Copy, so ctx and cloned share the same signal
+        assert_eq!(ctx.theme.get(), AppTheme::Dark);
     }
 }
 

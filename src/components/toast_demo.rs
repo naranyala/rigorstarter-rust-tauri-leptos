@@ -108,6 +108,111 @@ fn NotifyButton(label: String, toast_type: ToastType) -> impl IntoView {
     }
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_toast_type_variants() {
+        assert_ne!(ToastType::Success, ToastType::Error);
+        assert_ne!(ToastType::Success, ToastType::Info);
+        assert_ne!(ToastType::Error, ToastType::Info);
+    }
+
+    #[test]
+    fn test_toast_struct_creation() {
+        let toast = Toast {
+            id: 42,
+            message: "test message".to_string(),
+            toast_type: ToastType::Success,
+        };
+        assert_eq!(toast.id, 42);
+        assert_eq!(toast.message, "test message");
+        assert_eq!(toast.toast_type, ToastType::Success);
+    }
+
+    #[test]
+    fn test_toast_clone() {
+        let toast = Toast {
+            id: 1,
+            message: "hello".to_string(),
+            toast_type: ToastType::Error,
+        };
+        let cloned = toast.clone();
+        assert_eq!(toast.id, cloned.id);
+        assert_eq!(toast.message, cloned.message);
+        assert_eq!(toast.toast_type, cloned.toast_type);
+    }
+
+    #[test]
+    fn test_toast_debug_output() {
+        let toast = Toast {
+            id: 99,
+            message: "debug".to_string(),
+            toast_type: ToastType::Info,
+        };
+        let debug = format!("{:?}", toast);
+        assert!(debug.contains("99"));
+        assert!(debug.contains("debug"));
+        assert!(debug.contains("Info"));
+    }
+
+    #[test]
+    fn test_toast_context_initial_empty() {
+        let _rt = setup_runtime();
+        let ctx = ToastContext {
+            toasts: RwSignal::new(Vec::new()),
+        };
+        assert!(ctx.toasts.get().is_empty());
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    #[test]
+    fn test_toast_context_notify_adds_toast() {
+        let _rt = setup_runtime();
+        let ctx = ToastContext {
+            toasts: RwSignal::new(Vec::new()),
+        };
+        ctx.notify("Test notification", ToastType::Info);
+        let toasts = ctx.toasts.get();
+        assert_eq!(toasts.len(), 1);
+        assert_eq!(toasts[0].message, "Test notification");
+        assert_eq!(toasts[0].toast_type, ToastType::Info);
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    #[test]
+    fn test_toast_context_notify_multiple() {
+        let _rt = setup_runtime();
+        let ctx = ToastContext {
+            toasts: RwSignal::new(Vec::new()),
+        };
+        ctx.notify("First", ToastType::Success);
+        ctx.notify("Second", ToastType::Error);
+        ctx.notify("Third", ToastType::Info);
+        let toasts = ctx.toasts.get();
+        assert_eq!(toasts.len(), 3);
+    }
+
+    #[cfg(target_arch = "wasm32")]
+    #[test]
+    fn test_toast_context_notify_empty_message() {
+        let _rt = setup_runtime();
+        let ctx = ToastContext {
+            toasts: RwSignal::new(Vec::new()),
+        };
+        ctx.notify("", ToastType::Info);
+        let toasts = ctx.toasts.get();
+        assert_eq!(toasts.len(), 1);
+        assert!(toasts[0].message.is_empty());
+    }
+}
+
 #[component]
 pub fn ToastDemo() -> impl IntoView {
     let toasts = RwSignal::new(Vec::<Toast>::new());

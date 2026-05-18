@@ -120,3 +120,171 @@ impl ThemeService {
         self.set_dark_mode.update(|v| *v = !*v);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_navigation_service_initial_state() {
+        let _rt = setup_runtime();
+        let nav = NavigationService::new();
+        assert!(nav.active_demo.get().is_none());
+    }
+
+    #[test]
+    fn test_navigation_service_navigate_to_some() {
+        let _rt = setup_runtime();
+        let nav = NavigationService::new();
+        nav.navigate_to(Some("accordion".to_string()));
+        assert_eq!(nav.active_demo.get().unwrap(), "accordion");
+    }
+
+    #[test]
+    fn test_navigation_service_navigate_to_none() {
+        let _rt = setup_runtime();
+        let nav = NavigationService::new();
+        nav.navigate_to(Some("drawer".to_string()));
+        nav.navigate_to(None);
+        assert!(nav.active_demo.get().is_none());
+    }
+
+    #[test]
+    fn test_navigation_service_multiple_navigations() {
+        let _rt = setup_runtime();
+        let nav = NavigationService::new();
+        for id in &["a", "b", "c", "d", "e"] {
+            nav.navigate_to(Some((*id).to_string()));
+            assert_eq!(nav.active_demo.get().unwrap(), *id);
+        }
+    }
+
+    #[test]
+    fn test_search_service_initial_state() {
+        let _rt = setup_runtime();
+        let search = SearchService::new();
+        assert!(search.query.get().is_empty());
+        assert!(!search.is_open.get());
+    }
+
+    #[test]
+    fn test_search_service_toggle_open() {
+        let _rt = setup_runtime();
+        let search = SearchService::new();
+        assert!(!search.is_open.get());
+        search.toggle_search();
+        assert!(search.is_open.get());
+        search.toggle_search();
+        assert!(!search.is_open.get());
+    }
+
+    #[test]
+    fn test_search_service_close_resets_query() {
+        let _rt = setup_runtime();
+        let search = SearchService::new();
+        search.set_query.set("test query".to_string());
+        search.toggle_search();
+        assert!(search.is_open.get());
+        search.close_search();
+        assert!(!search.is_open.get());
+        assert!(search.query.get().is_empty());
+    }
+
+    #[test]
+    fn test_search_service_query_updates() {
+        let _rt = setup_runtime();
+        let search = SearchService::new();
+        search.set_query.set("Accordion".to_string());
+        assert_eq!(search.query.get(), "Accordion");
+        search.set_query.set(String::new());
+        assert!(search.query.get().is_empty());
+    }
+
+    #[test]
+    fn test_search_service_toggle_multiple_times() {
+        let _rt = setup_runtime();
+        let search = SearchService::new();
+        for i in 0..10 {
+            search.toggle_search();
+            assert_eq!(
+                search.is_open.get(),
+                i % 2 == 0,
+                "Failed at toggle {}",
+                i + 1
+            );
+        }
+    }
+
+    #[test]
+    fn test_theme_service_initial_state() {
+        let _rt = setup_runtime();
+        let theme = ThemeService::new();
+        assert!(!theme.is_dark_mode.get());
+    }
+
+    #[test]
+    fn test_theme_service_toggle() {
+        let _rt = setup_runtime();
+        let theme = ThemeService::new();
+        theme.toggle_theme();
+        assert!(theme.is_dark_mode.get());
+        theme.toggle_theme();
+        assert!(!theme.is_dark_mode.get());
+    }
+
+    #[test]
+    fn test_theme_service_toggle_many() {
+        let _rt = setup_runtime();
+        let theme = ThemeService::new();
+        for i in 0..100 {
+            theme.toggle_theme();
+            assert_eq!(
+                theme.is_dark_mode.get(),
+                i % 2 == 0,
+                "Failed at toggle {}",
+                i + 1
+            );
+        }
+    }
+
+    #[test]
+    fn test_registry_service_initial_state() {
+        let _rt = setup_runtime();
+        let reg = RegistryService::new();
+        assert!(reg.items.get().is_empty());
+        assert!(reg.is_loading.get());
+    }
+
+    #[test]
+    fn test_registry_service_set_items() {
+        let _rt = setup_runtime();
+        let reg = RegistryService::new();
+        let items = vec![RegistryItem {
+            name: "Test".into(),
+            id: "t1".into(),
+            category: "component".into(),
+            status: "pinned".into(),
+            line_count: 10,
+        }];
+        reg.set_items.set(items.clone());
+        assert_eq!(reg.items.get().len(), 1);
+        assert_eq!(reg.items.get()[0].name, "Test");
+    }
+
+    #[test]
+    fn test_registry_service_loading_state() {
+        let _rt = setup_runtime();
+        let reg = RegistryService::new();
+        assert!(reg.is_loading.get());
+        reg.set_loading.set(false);
+        assert!(!reg.is_loading.get());
+        reg.set_loading.set(true);
+        assert!(reg.is_loading.get());
+    }
+}
