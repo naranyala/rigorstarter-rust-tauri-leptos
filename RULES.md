@@ -1,6 +1,6 @@
 # Development Rules & Guidelines
 
-This document outlines the patterns and constraints for the Rigorstarter Rust-Tauri-Leptos project. Follow these rules to avoid common pitfalls related to WASM, Leptos reactivity, and Tauri integration.
+This document outlines the patterns and constraints for the Rigorstarter Rust-Tauri-Leptos project. Follow these rules to avoid common pitfalls related to WASM, Leptos reactivity, Tauri integration, and cross-platform compatibility.
 
 ## 🚀 Frontend (Leptos 0.7)
 
@@ -34,10 +34,16 @@ This document outlines the patterns and constraints for the Rigorstarter Rust-Ta
 ### 1. Command Design
 - **Error Handling:** All Tauri commands should return a `Result<T, AppError>` to ensure frontend errors are caught and handled.
 - **Data Transfer:** Use `serde_wasm_bindgen` for efficient conversion between Rust types and JS values.
+- **Single Responsibility:** Commands should perform a single task. If a command is doing complex logic (like registry construction + file reading), split it into smaller functions.
 
-### 2. File System Access
-- **Path Accuracy:** When mapping files for the registry, ensure paths are absolute relative to the project root. 
-- **Component Mapping:** Components should map to `src/components/{id}.rs`, and utilities to `src-tauri/src/utils/{id}.rs`.
+### 2. File System Access & Portability
+- **Avoid Hardcoded Relative Paths:** Never use hardcoded paths relative to the project root (e.g., `src/utils/...`) in Tauri commands, as these paths will not exist in a distributed package.
+- **Platform Abstraction:** Avoid direct access to OS-specific filesystems (like `/proc` on Linux). Use crates like `sysinfo` or `dirs` to achieve cross-platform compatibility.
+- **Path Resolution:** Use `tauri::AppHandle` or `tauri::PathResolver` to resolve paths to application data or configuration files.
+
+### 3. System Architecture
+- **Modular Initialization:** Avoid "God functions" in `lib.rs`. Break down the `run()` function into smaller, testable setup modules (e.g., `db::init`, `menu::setup`, `tray::setup`).
+- **FFI Safety:** Minimize use of `unsafe` and manual FFI. Prefer high-level, safe Rust wrappers for system calls.
 
 ---
 

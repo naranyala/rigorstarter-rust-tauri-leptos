@@ -121,6 +121,9 @@ impl ThemeService {
     }
 }
 
+pub mod todo;
+pub use todo::TodoService;
+
 #[cfg(test)]
 mod tests {
     use super::*;

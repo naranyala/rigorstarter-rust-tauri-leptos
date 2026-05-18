@@ -9,7 +9,7 @@ use crate::components::toast_demo::ToastDemo;
 use crate::components::todo_demo::TodoDemo;
 use crate::components::tree_view_demo::TreeViewDemo;
 use crate::components::utility_code_block::UtilityCodeBlock;
-use crate::services::{NavigationService, RegistryService};
+use crate::services::{NavigationService, RegistryService, TodoService};
 use leptos::prelude::*;
 
 #[component]
@@ -75,7 +75,17 @@ pub fn MainContent() -> impl IntoView {
 
             // 8. Todo Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("todo") { "block" } else { "none" }>
-                <TodoDemo />
+                {move || {
+                    let todo_service = use_context::<TodoService>().expect("TodoService should be provided");
+                    view! {
+                        <TodoDemo
+                            items=todo_service.items
+                            on_add=Callback::new(move |title| todo_service.add_todo(title))
+                            on_toggle=Callback::new(move |id| todo_service.toggle_todo(id))
+                            on_delete=Callback::new(move |id| todo_service.delete_todo(id))
+                        />
+                    }
+                }}
             </div>
 
             // 9. Tree View Slot

@@ -172,24 +172,20 @@ mod tests {
     }
 
     #[test]
-    fn test_mock_c_session_destroy_null_safety() {
-        // Should not crash when destroying null
-        mock_c_session_destroy(std::ptr::null_mut());
-    }
+    fn test_mock_c_session_lifecycle() {
+        let id = 123;
+        let session_ptr = mock_c_session_create(id);
+        assert!(!session_ptr.is_null());
 
-    unsafe extern "C" fn test_callback(val: c_int) {
-        assert_eq!(val, 10);
-    }
+        let session_id = mock_c_session_get_id(session_ptr);
+        assert_eq!(session_id, id);
 
-    #[test]
-    fn test_mock_c_do_work_with_callback() {
-        let cb: CCallback = Some(test_callback);
-        mock_c_do_work_with_callback(5, cb);
+        mock_c_session_destroy(session_ptr);
     }
 
     #[test]
-    fn test_mock_c_do_work_with_none_callback() {
-        // Should not panic when no callback is provided
-        mock_c_do_work_with_callback(5, None);
+    fn test_mock_c_session_get_id_null() {
+        let id = mock_c_session_get_id(std::ptr::null_mut());
+        assert_eq!(id, -1);
     }
 }

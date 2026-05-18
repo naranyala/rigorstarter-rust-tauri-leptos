@@ -5,13 +5,15 @@ mod errors;
 #[cfg(test)]
 mod lib_tests;
 mod menu;
+mod registry;
 mod syslib;
 mod utils;
+mod utils_data;
 
 use db::TodoItem;
 use errors::AppError;
 use menu::setup_main_menu;
-use std::fs;
+use registry::{RegistryItem, REGISTRY_ITEMS};
 use std::sync::Mutex;
 use syslib::{
     get_disk_usage, get_local_ips, get_session_info, get_system_metrics, send_notification,
@@ -61,66 +63,26 @@ fn delete_todo(id: i64, state: tauri::State<'_, Database>) -> Result<(), AppErro
     db::delete(&conn, id).map_err(|e| AppError::Internal(e))
 }
 
-fn get_file_line_count(path: String) -> Result<usize, AppError> {
-    fs::read_to_string(path)
-        .map(|s| s.lines().count())
-        .map_err(|e| AppError::NotFound(e.to_string()))
-}
-
-#[derive(serde::Serialize)]
-pub struct RegistryItem {
-    pub name: String,
-    pub id: String,
-    pub category: String,
-    pub status: String,
-    pub line_count: usize,
-}
-
 #[tauri::command]
 fn get_registry() -> Result<Vec<RegistryItem>, AppError> {
-    let items = vec![
-        ("Accordion", "accordion", "component", "pinned"),
-        ("Drawer", "drawer", "component", "in-development"),
-        ("Tabs", "tabs", "component", "pinned"),
-        ("Modal", "modal", "component", "in-development"),
-        ("Todo List", "todo", "component", "pinned"),
-        ("Tree View", "tree_view", "component", "pinned"),
-        ("JSON Todo", "json_todo", "component", "pinned"),
-        ("Table Demo", "table_demo", "component", "pinned"),
-        ("Markdown Demo", "markdown_demo", "component", "pinned"),
-        ("Network", "network", "utility", "pinned"),
-        ("System", "system", "utility", "archives"),
-        ("Storage", "storage", "utility", "in-development"),
-        ("Process", "process", "utility", "pinned"),
-        ("Disk Usage", "disk_usage", "utility", "pinned"),
-        ("Env Vars", "env_vars", "utility", "archives"),
-    ];
+    let registry = REGISTRY_ITEMS
+        .iter()
+        .map(|(name, id, category, status)| {
+            let line_count = if *category == "utility" {
+                utils_data::get_utility_line_count(id)
+            } else {
+                0
+            };
 
-    let mut registry = Vec::new();
-    for (name, id, category, status) in items {
-        let line_count = if category == "utility" {
-            let paths = vec![
-                format!("src-tauri/src/utils/{}.rs", id),
-                format!("src/utils/{}.rs", id),
-            ];
-
-            paths
-                .into_iter()
-                .find_map(|path| fs::read_to_string(path).ok())
-                .map(|s| s.lines().count())
-                .unwrap_or(0)
-        } else {
-            0 // Components are frontend, line count not easily available here
-        };
-
-        registry.push(RegistryItem {
-            name: name.to_string(),
-            id: id.to_string(),
-            category: category.to_string(),
-            status: status.to_string(),
-            line_count,
-        });
-    }
+            RegistryItem {
+                name: name.to_string(),
+                id: id.to_string(),
+                category: category.to_string(),
+                status: status.to_string(),
+                line_count,
+            }
+        })
+        .collect();
 
     Ok(registry)
 }
@@ -133,21 +95,9 @@ fn get_utility_source(utility: &str) -> Result<String, AppError> {
         ));
     }
 
-    let paths = vec![
-        format!("src-tauri/src/utils/{}.rs", utility),
-        format!("src/utils/{}.rs", utility),
-    ];
-
-    for path in paths {
-        if let Ok(content) = fs::read_to_string(&path) {
-            return Ok(content);
-        }
-    }
-
-    Err(AppError::NotFound(format!(
-        "Utility source for '{}' not found",
-        utility
-    )))
+    utils_data::get_utility_source(utility)
+        .map(|s| s.to_string())
+        .ok_or_else(|| AppError::NotFound(format!("Utility source for '{}' not found", utility)))
 }
 
 #[tauri::command]
@@ -257,60 +207,12 @@ fn show_message_dialog(
     Ok(())
 }
 
-use tauri::{
-    menu::{Menu, MenuItem},
-    tray::TrayIconBuilder,
-};
-
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
-            // Initialize SQLite database
-            let app_data = app.path().app_data_dir().map_err(|e| Box::new(e))?;
-            std::fs::create_dir_all(&app_data)
-                .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
-            let db_path = app_data.join("todos.db");
-            let conn = db::open(&db_path).map_err(|e| {
-                Box::new(std::io::Error::new(std::io::ErrorKind::Other, e))
-                    as Box<dyn std::error::Error>
-            })?;
-            db::migrate(&conn).map_err(|e| {
-                Box::new(std::io::Error::new(std::io::ErrorKind::Other, e))
-                    as Box<dyn std::error::Error>
-            })?;
-            app.manage(Database {
-                conn: Mutex::new(conn),
-            });
-
+            initialize_database(app)?;
             setup_main_menu(app.handle())?;
-
-            // 1. Create Menu Items
-            let show_window = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
-            let quit_app = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
-
-            // 2. Build the Menu
-            let menu = Menu::with_items(app, &[&show_window, &quit_app])?;
-
-            // 3. Build the Tray Icon
-            let _tray = TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
-                .menu(&menu)
-                .on_menu_event(|app, event| match event.id.as_ref() {
-                    "show" => {
-                        if let Some(window) = app.get_webview_window("main") {
-                            let _ = window.show();
-                            let _ = window.set_focus();
-                        }
-                    }
-                    "quit" => {
-                        app.exit(0);
-                    }
-                    _ => {}
-                })
-                .build(app)
-                .unwrap();
-
+            setup_tray(app)?;
             Ok(())
         })
         .plugin(tauri_plugin_opener::init())
@@ -333,4 +235,49 @@ pub fn run() {
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+fn initialize_database(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    let app_data = app.path().app_data_dir()?;
+    std::fs::create_dir_all(&app_data)?;
+    let db_path = app_data.join("todos.db");
+    let conn = db::open(&db_path).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    db::migrate(&conn).map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+    app.manage(Database {
+        conn: Mutex::new(conn),
+    });
+    Ok(())
+}
+
+fn setup_tray(app: &mut tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    use tauri::menu::{Menu, MenuItem};
+    use tauri::tray::TrayIconBuilder;
+
+    // 1. Create Menu Items
+    let show_window = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
+    let quit_app = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+
+    // 2. Build the Menu
+    let menu = Menu::with_items(app, &[&show_window, &quit_app])?;
+
+    // 3. Build the Tray Icon
+    let _tray = TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
+        .menu(&menu)
+        .on_menu_event(|app, event| match event.id.as_ref() {
+            "show" => {
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.set_focus();
+                }
+            }
+            "quit" => {
+                app.exit(0);
+            }
+            _ => {}
+        })
+        .build(app)
+        .unwrap();
+
+    Ok(())
 }

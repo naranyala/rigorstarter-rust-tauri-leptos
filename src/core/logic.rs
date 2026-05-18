@@ -215,13 +215,13 @@ mod tests {
     }
 
     #[test]
-    fn test_sort_all_same_status() {
+    fn test_sort_unsorted_input() {
         let reg = vec![
             RegistryItem {
                 name: "A".into(),
                 id: "a".into(),
                 category: "component".into(),
-                status: "pinned".into(),
+                status: "archives".into(),
                 line_count: 10,
             },
             RegistryItem {
@@ -231,9 +231,72 @@ mod tests {
                 status: "pinned".into(),
                 line_count: 20,
             },
+            RegistryItem {
+                name: "C".into(),
+                id: "c".into(),
+                category: "component".into(),
+                status: "in-development".into(),
+                line_count: 30,
+            },
         ];
         let sorted = sort_registry_by_status(&reg);
         assert_eq!(sorted[0].status, "pinned");
-        assert_eq!(sorted[1].status, "pinned");
+        assert_eq!(sorted[1].status, "in-development");
+        assert_eq!(sorted[2].status, "archives");
+    }
+
+    #[test]
+    fn test_sort_reversed_input() {
+        let reg = vec![
+            RegistryItem {
+                name: "A".into(),
+                id: "a".into(),
+                category: "component".into(),
+                status: "archives".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "B".into(),
+                id: "b".into(),
+                category: "component".into(),
+                status: "in-development".into(),
+                line_count: 20,
+            },
+            RegistryItem {
+                name: "C".into(),
+                id: "c".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 30,
+            },
+        ];
+        let sorted = sort_registry_by_status(&reg);
+        assert_eq!(sorted[0].status, "pinned");
+        assert_eq!(sorted[1].status, "in-development");
+        assert_eq!(sorted[2].status, "archives");
+    }
+
+    #[test]
+    fn test_sort_unknown_status() {
+        let reg = vec![
+            RegistryItem {
+                name: "Unknown".into(),
+                id: "u".into(),
+                category: "component".into(),
+                status: "mystery".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "Pinned".into(),
+                id: "p".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 20,
+            },
+        ];
+        let sorted = sort_registry_by_status(&reg);
+        // unknown (3) should be last
+        assert_eq!(sorted[0].status, "pinned");
+        assert_eq!(sorted[1].status, "mystery");
     }
 }
