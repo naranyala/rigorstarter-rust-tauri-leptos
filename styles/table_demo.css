@@ -1,0 +1,78 @@
+.table-demo {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
+
+.table-demo h2 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+}
+
+.table-demo-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.data-table th {
+  background: var(--bg-tertiary);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.2s;
+}
+
+.data-table th:hover {
+  background: var(--border-color);
+}
+
+.data-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tr:hover td {
+  background: var(--bg-tertiary);
+}
+
+.sort-icon {
+  display: inline-block;
+  width: 1rem;
+  margin-left: 0.5rem;
+  color: var(--text-muted);
+}
+
+.role-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}

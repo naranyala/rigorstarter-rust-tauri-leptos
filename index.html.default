@@ -8,12 +8,17 @@
     <link data-trunk rel="css" href="styles/common.css" />
     <link data-trunk rel="css" href="styles/dashboard.css" />
     <link data-trunk rel="css" href="styles/drawer.css" />
+    <link data-trunk rel="css" href="styles/json_todo_demo.css" />
     <link data-trunk rel="css" href="styles/layout.css" />
+    <link data-trunk rel="css" href="styles/markdown_demo.css" />
     <link data-trunk rel="css" href="styles/modal.css" />
     <link data-trunk rel="css" href="styles/navbar.css" />
     <link data-trunk rel="css" href="styles/search.css" />
+    <link data-trunk rel="css" href="styles/table_demo.css" />
     <link data-trunk rel="css" href="styles/tabs.css" />
     <link data-trunk rel="css" href="styles/theme_demo.css" />
+    <link data-trunk rel="css" href="styles/tree_view_demo.css" />
+    <link data-trunk rel="css" href="styles/todo_demo.css" />
     <link data-trunk rel="css" href="styles/toast_demo.css" />
     <link data-trunk rel="css" href="styles/utility.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />

@@ -2,6 +2,8 @@ use crate::components::accordion::AccordionDemo;
 use crate::components::dashboard::Dashboard;
 use crate::components::drawer::DrawerDemo;
 use crate::components::json_todo_demo::JsonTodoDemo;
+use crate::components::markdown_demo::MarkdownDemo;
+use crate::components::table_demo::TableDemo;
 use crate::components::theme_demo::ThemeDemo;
 use crate::components::toast_demo::ToastDemo;
 use crate::components::todo_demo::TodoDemo;
@@ -86,10 +88,20 @@ pub fn MainContent() -> impl IntoView {
                 <JsonTodoDemo />
             </div>
 
-            // 11. Dynamic Utility Slot
+            // 11. Table Demo Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("table_demo") { "block" } else { "none" }>
+                <TableDemo />
+            </div>
+
+            // 12. Markdown Demo Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("markdown_demo") { "block" } else { "none" }>
+                <MarkdownDemo />
+            </div>
+
+            // 13. Dynamic Utility Slot
             <div style:display=move || {
                 let active = nav_service.active_demo.get();
-                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") && active.as_deref() != Some("todo") && active.as_deref() != Some("json_todo") && active.as_deref() != Some("tree_view") {
+                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") && active.as_deref() != Some("todo") && active.as_deref() != Some("json_todo") && active.as_deref() != Some("tree_view") && active.as_deref() != Some("table_demo") && active.as_deref() != Some("markdown_demo") {
                     "block"
                 } else {
                     "none"

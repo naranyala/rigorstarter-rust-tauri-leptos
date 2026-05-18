@@ -86,6 +86,8 @@ fn get_registry() -> Result<Vec<RegistryItem>, AppError> {
         ("Todo List", "todo", "component", "pinned"),
         ("Tree View", "tree_view", "component", "pinned"),
         ("JSON Todo", "json_todo", "component", "pinned"),
+        ("Table Demo", "table_demo", "component", "pinned"),
+        ("Markdown Demo", "markdown_demo", "component", "pinned"),
         ("Network", "network", "utility", "pinned"),
         ("System", "system", "utility", "archives"),
         ("Storage", "storage", "utility", "in-development"),

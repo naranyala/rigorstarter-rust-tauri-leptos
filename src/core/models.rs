@@ -31,6 +31,14 @@ pub struct TodoItem {
     pub created_at: String,
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct User {
+    pub id: u32,
+    pub name: String,
+    pub email: String,
+    pub role: String,
+}
+
 #[cfg(test)]
 mod tree_node_tests {
     use super::*;
