@@ -4,11 +4,12 @@
 ARCHIVE_DIR="./build"
 # Get the current directory name
 FOLDER_NAME=$(basename "$(pwd)")
-TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 ARCHIVE_NAME="${FOLDER_NAME}_${TIMESTAMP}.tar.gz"
 EXCLUDES=(
     "target"
     "dist"
+    "build"
     ".git"
     ".trunk"
     "build_error.log"
