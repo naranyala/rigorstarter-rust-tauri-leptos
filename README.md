@@ -10,9 +10,10 @@ A professional starter template for building high-performance desktop applicatio
 
 ## Project Features
 
+- MVVM Architecture: Separation of concerns between Core logic, Services, and Views.
 - Integrated Registry: Dynamic discovery of components and system utilities.
 - Source Code Viewer: Ability to view the Rust source of system utilities directly in the UI.
-- Responsive Design: Modern UI with a focus on developer experience.
+- Responsive Design: Modern UI with full light/dark theme support.
 - Secure Backend: Validated file system access and command handling.
 
 ## Getting Started
@@ -35,16 +36,18 @@ npx @tauri-apps/cli build
 
 ## Project Structure
 
-- `src/`: Leptos frontend source code.
+- `src/core/`: Domain models and pure business logic.
+- `src/services/`: Stateful services and dependency injection.
+- `src/components/`: UI views and components.
 - `src-tauri/`: Tauri backend Rust code and configuration.
 - `docs/`: Comprehensive project documentation.
 - `Trunk.toml`: Configuration for the Trunk WASM bundler.
-- `index.html`: Entry point for the frontend.
+- `index.html.default`: Template for the frontend entry point.
 
 ## Documentation
 
 Detailed guides are available in the `docs/` directory:
-- Architecture: Overview of the system design.
-- Frontend: Guide for adding components.
+- Architecture: Overview of the MVVM system design.
+- Frontend: Guide for creating themed components.
 - Backend: Guide for adding commands and utilities.
 - Deployment: Build and distribution instructions.

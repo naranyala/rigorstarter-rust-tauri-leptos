@@ -1,27 +1,33 @@
 # Deployment and Distribution
 
-This guide explains how to build and distribute the application.
+This guide details the process of building and distributing the application for production.
 
-## Production Build
+## Production Build Process
 
-To generate a production-ready installer:
+To create a production-ready installer, run:
 
 ```bash
 npx @tauri-apps/cli build
 ```
 
-This command performs the following steps:
-1. Compiles the Leptos frontend to optimized WASM.
-2. Compiles the Rust backend with release optimizations.
-3. Bundles all assets into a native installer (e.g., .msi, .dmg, .deb).
+### Build Steps
+1. **WASM Optimization**: The Leptos frontend is compiled and optimized using `wasm-opt`.
+2. **Native Compilation**: The Rust backend is compiled with release optimizations (`--release`).
+3. **Bundling**: Tauri packages the binary and assets into a platform-specific installer (MSI for Windows, DMG for macOS, DEB for Linux).
 
-## Build Configuration
+## Configuration
 
-Tauri configuration is managed in `src-tauri/tauri.conf.json`. Here you can modify:
-- Application identifier.
-- Window dimensions and properties.
-- Bundle icons and versioning.
+Application metadata and window settings are managed in `src-tauri/tauri.conf.json`:
+- **Identifier**: Unique bundle ID for the OS.
+- **Window**: Initial size, transparency, and resizable properties.
+- **Bundle**: Versioning and application icons.
 
-## Prerequisites for Distribution
+## Environment Requirements
 
-Ensure that the target machine has the necessary system libraries installed. Refer to the official Tauri documentation for specific OS requirements.
+### Build Machine
+- Rust toolchain (latest stable).
+- Node.js and npm/yarn.
+- Platform-specific build tools (e.g., MSVC for Windows, Xcode for macOS, build-essential for Linux).
+
+### Target Machine
+The generated installers are standalone and do not require a Rust environment on the user's machine.

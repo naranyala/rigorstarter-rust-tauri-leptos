@@ -13,6 +13,17 @@ pub fn filter_registry(
         .collect()
 }
 
+pub fn sort_registry_by_status(registry: &[RegistryItem]) -> Vec<RegistryItem> {
+    let mut sorted = registry.to_vec();
+    sorted.sort_by_key(|item| match item.status.as_str() {
+        "pinned" => 0,
+        "in-development" => 1,
+        "archives" => 2,
+        _ => 3,
+    });
+    sorted
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -107,5 +118,59 @@ mod tests {
         let res = filter_registry(&reg, "", "component");
         // Should return all components
         assert_eq!(res.len(), 2);
+    }
+
+    #[test]
+    fn test_sort_by_status() {
+        let reg = vec![
+            RegistryItem {
+                name: "Archive1".into(),
+                id: "a1".into(),
+                category: "component".into(),
+                status: "archives".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "Pinned1".into(),
+                id: "p1".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 20,
+            },
+            RegistryItem {
+                name: "Dev1".into(),
+                id: "d1".into(),
+                category: "component".into(),
+                status: "in-development".into(),
+                line_count: 30,
+            },
+        ];
+        let sorted = sort_registry_by_status(&reg);
+        assert_eq!(sorted[0].status, "pinned");
+        assert_eq!(sorted[1].status, "in-development");
+        assert_eq!(sorted[2].status, "archives");
+    }
+
+    #[test]
+    fn test_sort_unknown_status() {
+        let reg = vec![
+            RegistryItem {
+                name: "Unknown".into(),
+                id: "u1".into(),
+                category: "component".into(),
+                status: "weird".into(),
+                line_count: 10,
+            },
+            RegistryItem {
+                name: "Pinned".into(),
+                id: "p1".into(),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: 20,
+            },
+        ];
+        let sorted = sort_registry_by_status(&reg);
+        assert_eq!(sorted[0].status, "pinned");
+        assert_eq!(sorted[1].status, "weird");
     }
 }

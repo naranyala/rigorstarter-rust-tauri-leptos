@@ -1,31 +1,35 @@
 # System Architecture
 
-This project is a desktop application built with a Rust-based stack, combining Tauri for the windowing and system access and Leptos for the user interface.
+This project implements a high-performance desktop application using a tiered architecture that separates domain logic from the delivery mechanism.
 
-## High-Level Design
+## Architecture Pattern: MVVM
 
-The application follows a client-server model where the frontend (client) runs in a webview and the backend (server) runs as a native process.
+The application follows a modified Model-View-ViewModel (MVVM) pattern to ensure scalability and maintainability.
 
-### Frontend (Leptos)
-The frontend is written in Rust and compiled to WebAssembly (WASM). It uses the Leptos framework for reactive UI components. The frontend handles:
-- Routing and view management.
-- State management for the UI.
-- Invoking Tauri commands for system-level operations.
+### 1. Model (Core)
+Located in `src/core/`, the model layer contains:
+- **Shared Models**: Data structures (DTOs) used across the application.
+- **Core Logic**: Pure functions for business rules (e.g., registry filtering and sorting). This layer has zero dependencies on UI frameworks or system APIs.
 
-### Backend (Tauri)
-The backend is a native Rust process. It manages the application lifecycle and provides access to the underlying operating system. The backend handles:
-- System utility execution.
-- File system access for source code retrieval.
-- Window management and system tray integration.
-- Communication with the frontend via the Tauri command system.
+### 2. ViewModel (Services)
+Located in `src/services/`, the service layer acts as the ViewModel:
+- **State Management**: Uses Leptos signals to maintain application state.
+- **Dependency Injection**: Services are provided via Leptos Context, allowing components to access shared state without prop-drilling.
+- **Orchestration**: Coordinates between the Core logic and the Tauri backend.
 
-## Data Flow
+### 3. View (Components)
+Located in `src/components/`, the view layer is responsible for:
+- **Reactive UI**: Rendering components based on the state provided by services.
+- **Event Handling**: Triggering service methods in response to user interaction.
 
-1. Frontend requests data (e.g., a list of components) by invoking a Tauri command.
-2. Backend processes the request, interacting with the file system or internal state.
-3. Backend returns a serialized JSON response.
-4. Frontend deserializes the response into Rust structs and updates the reactive UI.
+## Communication Layer
 
-## Registry System
+The application uses a bridge pattern for Frontend-Backend communication:
 
-A central registry maps human-readable names to unique identifiers. This allows the application to decouple the UI labels from the actual file paths or component IDs on disk.
+- **Frontend**: Invokes Tauri commands via the `invoke` API.
+- **Backend**: Processes requests in native Rust, interacting with the OS, and returns serialized JSON.
+- **Shared Contracts**: Both ends agree on the data structures defined in the Core models.
+
+## Component Registry
+
+A central registry system decouples UI labels from system identifiers. This allows for dynamic discovery of components and utilities without hardcoding paths in the UI components.

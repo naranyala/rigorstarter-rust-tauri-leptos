@@ -1,28 +1,41 @@
 # Frontend Development Guide
 
-The frontend is built with Leptos and compiled to WASM using Trunk.
+The frontend is built with Leptos, compiled to WebAssembly (WASM) via Trunk.
 
-## Adding a New Component
+## Component Architecture
 
-To add a new UI component to the library:
+The application follows a service-driven component model.
 
-1. Create a new Rust file in `src/components/`.
-2. Define a Leptos component using the `#[component]` attribute.
-3. Implement the view logic using the `view!` macro.
-4. Import and integrate the component into `src/components/main_content.rs`.
-5. Assign a unique ID to the component in the backend registry to make it discoverable.
+### Creating a Component
+1. Implement the view in `src/components/` using the `#[component]` attribute.
+2. Inject required services via `use_context::<ServiceType>()`.
+3. Use reactive signals from services to drive the UI.
+4. Add the component to the `MainContent` slot for visibility.
 
-## Styling
+## Styling and Theming
 
-Styling is managed through a global `styles.css` file. The project uses CSS variables for consistent branding:
-- `--primary`: Main accent color.
-- `--secondary-bg`: Background for panels and sidebars.
-- `--border-color`: Standard border color.
+The project uses a CSS-variable based design system located in `styles/`.
+
+### Theming System
+- **Light Mode**: Default variables defined in `:root`.
+- **Dark Mode**: Overriding variables defined in the `.dark` class.
+- **Implementation**: The `ThemeService` toggles the `.dark` class on the `body` element.
+
+### Standard Variables
+- `--primary`: Accent color for buttons and links.
+- `--bg-color`: Main application background.
+- `--text-main`: Primary text color.
+- `--border-color`: Subtle borders for panels.
 
 ## State Management
 
-State is managed using Leptos signals. Use `signal()` for local component state and `create_memo()` for derived state to optimize performance.
+State is handled through a layered approach:
+- **Local State**: Use `signal()` within components for ephemeral UI state.
+- **Global State**: Use `services/` for application-wide state, provided via Context.
+- **Derived State**: Use `Memo` or closures to compute values from signals.
 
-## Build Process
+## Build Pipeline
 
-The project uses Trunk for bundling. Run `trunk build` to compile the WASM frontend and generate the distribution files in the `dist/` folder.
+1. **Trunk**: Bundles WASM and assets.
+2. **Optimization**: `wasm-opt` is used to reduce binary size.
+3. **Deployment**: The resulting `dist/` folder is bundled by Tauri into the native installer.

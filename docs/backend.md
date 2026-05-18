@@ -1,31 +1,38 @@
 # Backend Development Guide
 
-The backend is built with Tauri and provides native system capabilities.
+The backend is powered by Tauri and provides the native system bridge for the application.
 
-## Adding a New Tauri Command
+## Command Implementation
 
-To expose new functionality to the frontend:
+Tauri commands allow the frontend to trigger native Rust code.
 
-1. Define a function in `src-tauri/src/lib.rs` (or a separate module).
-2. Annotate the function with `#[tauri::command]`.
-3. Register the command in the `run()` function using the `invoke_handler` macro:
+### Adding a Command
+1. Define a function in `src-tauri/src/lib.rs` or a specific module.
+2. Annotate with `#[tauri::command]`.
+3. Register the command in the `invoke_handler`:
    ```rust
    .invoke_handler(tauri::generate_handler![your_command_name])
    ```
-4. Call the command from the frontend using the `invoke` function.
 
-## Adding System Utilities
+## System Utilities
 
-System utilities are standalone Rust files that provide specific functionality.
+Utilities are the core functional units of the backend.
 
-1. Create a new Rust file in `src-tauri/src/utils/`.
-2. Implement the utility logic.
-3. Add the utility to the registry in `get_registry()` within `src-tauri/src/lib.rs`, ensuring the ID matches the filename.
+### Implementation Workflow
+1. Create a Rust module in `src-tauri/src/utils/`.
+2. Implement the functional logic.
+3. Register the utility in the `get_registry()` function in `lib.rs`, mapping a unique ID to the utility.
 
-## Error Handling
+## Error Handling Strategy
 
-The backend uses a custom `AppError` enum to handle various failure states. Always return `Result<T, AppError>` from commands to ensure errors are correctly propagated to the frontend.
+The backend utilizes a unified error handling system:
+- All commands return `Result<T, AppError>`.
+- `AppError` is a custom enum that implements `serde::Serialize`, allowing errors to be passed directly to the frontend as JSON.
+- Detailed error messages are propagated to the UI for developer debugging.
 
-## File System Access
+## Security and File System
 
-Access to the file system is restricted for security. All file paths are validated to prevent directory traversal attacks.
+To prevent security vulnerabilities:
+- All file system access is strictly validated.
+- Path traversal checks are implemented to ensure the application cannot access files outside its designated scope.
+- Minimal privileges are requested from the operating system.

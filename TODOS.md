@@ -1,7 +1,6 @@
 # Project Roadmap and TODOs
 
 ## Frontend Improvements
-- Implement a dark mode toggle.
 - Add a more robust routing system for nested component views.
 - Enhance the search overlay with keyboard shortcuts.
 - Create a consistent design system for all demo components.
