@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 
+mod db;
 mod errors;
 #[cfg(test)]
 mod lib_tests;
@@ -7,14 +8,58 @@ mod menu;
 mod syslib;
 mod utils;
 
+use db::TodoItem;
 use errors::AppError;
 use menu::setup_main_menu;
 use std::fs;
+use std::sync::Mutex;
 use syslib::{
     get_disk_usage, get_local_ips, get_session_info, get_system_metrics, send_notification,
     Notification, SystemInfo, XdgPaths,
 };
 use tauri::Manager;
+
+pub struct Database {
+    pub conn: Mutex<rusqlite::Connection>,
+}
+
+// --- Todo Commands ---
+
+#[tauri::command]
+fn add_todo(title: String, state: tauri::State<'_, Database>) -> Result<TodoItem, AppError> {
+    let conn = state
+        .conn
+        .lock()
+        .map_err(|e| AppError::Internal(e.to_string()))?;
+    db::insert(&conn, &title).map_err(|e| AppError::Internal(e))
+}
+
+#[tauri::command]
+fn list_todos(state: tauri::State<'_, Database>) -> Result<Vec<TodoItem>, AppError> {
+    let conn = state
+        .conn
+        .lock()
+        .map_err(|e| AppError::Internal(e.to_string()))?;
+    db::list_all(&conn).map_err(|e| AppError::Internal(e))
+}
+
+#[tauri::command]
+fn toggle_todo(id: i64, state: tauri::State<'_, Database>) -> Result<TodoItem, AppError> {
+    let conn = state
+        .conn
+        .lock()
+        .map_err(|e| AppError::Internal(e.to_string()))?;
+    db::toggle(&conn, id).map_err(|e| AppError::Internal(e))
+}
+
+#[tauri::command]
+fn delete_todo(id: i64, state: tauri::State<'_, Database>) -> Result<(), AppError> {
+    let conn = state
+        .conn
+        .lock()
+        .map_err(|e| AppError::Internal(e.to_string()))?;
+    db::delete(&conn, id).map_err(|e| AppError::Internal(e))
+}
 
 fn get_file_line_count(path: String) -> Result<usize, AppError> {
     fs::read_to_string(path)
@@ -38,6 +83,9 @@ fn get_registry() -> Result<Vec<RegistryItem>, AppError> {
         ("Drawer", "drawer", "component", "in-development"),
         ("Tabs", "tabs", "component", "pinned"),
         ("Modal", "modal", "component", "in-development"),
+        ("Todo List", "todo", "component", "pinned"),
+        ("Tree View", "tree_view", "component", "pinned"),
+        ("JSON Todo", "json_todo", "component", "pinned"),
         ("Network", "network", "utility", "pinned"),
         ("System", "system", "utility", "archives"),
         ("Storage", "storage", "utility", "in-development"),
@@ -216,6 +264,23 @@ use tauri::{
 pub fn run() {
     tauri::Builder::default()
         .setup(|app| {
+            // Initialize SQLite database
+            let app_data = app.path().app_data_dir().map_err(|e| Box::new(e))?;
+            std::fs::create_dir_all(&app_data)
+                .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)?;
+            let db_path = app_data.join("todos.db");
+            let conn = db::open(&db_path).map_err(|e| {
+                Box::new(std::io::Error::new(std::io::ErrorKind::Other, e))
+                    as Box<dyn std::error::Error>
+            })?;
+            db::migrate(&conn).map_err(|e| {
+                Box::new(std::io::Error::new(std::io::ErrorKind::Other, e))
+                    as Box<dyn std::error::Error>
+            })?;
+            app.manage(Database {
+                conn: Mutex::new(conn),
+            });
+
             setup_main_menu(app.handle())?;
 
             // 1. Create Menu Items
@@ -258,7 +323,11 @@ pub fn run() {
             notify_user,
             open_file_dialog,
             open_directory_dialog,
-            show_message_dialog
+            show_message_dialog,
+            add_todo,
+            list_todos,
+            toggle_todo,
+            delete_todo
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

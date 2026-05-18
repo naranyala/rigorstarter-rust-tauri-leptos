@@ -2,6 +2,8 @@
 /target
 src-tauri/target
 
+/build
+
 # Trunk
 /dist
 

@@ -27,5 +27,6 @@ thiserror = "1.0"
 zbus = "4.0"
 sysinfo = "0.31"
 notify = "6.1"
+rusqlite = { version = "0.31", features = ["bundled"] }
 tokio = { version = "1", features = ["full"] }
 

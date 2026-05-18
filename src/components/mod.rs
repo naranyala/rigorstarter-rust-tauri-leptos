@@ -1,6 +1,7 @@
 pub mod accordion;
 pub mod dashboard;
 pub mod drawer;
+pub mod json_todo_demo;
 pub mod main_content;
 pub mod modal;
 pub mod navbar;
@@ -9,4 +10,6 @@ pub mod search;
 pub mod tabs;
 pub mod theme_demo;
 pub mod toast_demo;
+pub mod todo_demo;
+pub mod tree_view_demo;
 pub mod utility_code_block;

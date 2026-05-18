@@ -1,8 +1,11 @@
 use crate::components::accordion::AccordionDemo;
 use crate::components::dashboard::Dashboard;
 use crate::components::drawer::DrawerDemo;
+use crate::components::json_todo_demo::JsonTodoDemo;
 use crate::components::theme_demo::ThemeDemo;
 use crate::components::toast_demo::ToastDemo;
+use crate::components::todo_demo::TodoDemo;
+use crate::components::tree_view_demo::TreeViewDemo;
 use crate::components::utility_code_block::UtilityCodeBlock;
 use crate::services::{NavigationService, RegistryService};
 use leptos::prelude::*;
@@ -68,10 +71,25 @@ pub fn MainContent() -> impl IntoView {
                 <ToastDemo />
             </div>
 
-            // 8. Dynamic Utility Slot
+            // 8. Todo Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("todo") { "block" } else { "none" }>
+                <TodoDemo />
+            </div>
+
+            // 9. Tree View Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("tree_view") { "block" } else { "none" }>
+                <TreeViewDemo />
+            </div>
+
+            // 10. JSON Todo Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("json_todo") { "block" } else { "none" }>
+                <JsonTodoDemo />
+            </div>
+
+            // 11. Dynamic Utility Slot
             <div style:display=move || {
                 let active = nav_service.active_demo.get();
-                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") {
+                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") && active.as_deref() != Some("todo") && active.as_deref() != Some("json_todo") && active.as_deref() != Some("tree_view") {
                     "block"
                 } else {
                     "none"
