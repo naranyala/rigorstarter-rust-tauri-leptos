@@ -4,7 +4,25 @@
   padding: 0 1.5rem;
 }
 
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  animation: app-wake-up 0.3s ease-out;
+  /* Force GPU layer promotion to prevent compositor stalls */
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@keyframes app-wake-up {
+  from { opacity: 0.99; }
+  to { opacity: 1; }
+}
+
 .main-content-wrapper {
+
   padding: 2rem;
   text-align: center;
 }

@@ -14,6 +14,8 @@ use db::TodoItem;
 use errors::AppError;
 use menu::setup_main_menu;
 use registry::{RegistryItem, REGISTRY_ITEMS};
+use std::ffi::{CStr, CString};
+use std::os::raw::{c_char, c_int};
 use std::sync::Mutex;
 use syslib::{
     get_disk_usage, get_local_ips, get_session_info, get_system_metrics, send_notification,
@@ -23,6 +25,55 @@ use tauri::Manager;
 
 pub struct Database {
     pub conn: Mutex<rusqlite::Connection>,
+}
+
+// --- FFI Declarations ---
+
+extern "C" {
+    fn c_add(a: c_int, b: c_int) -> c_int;
+    fn c_greet(name: *const c_char) -> *mut c_char;
+    fn c_uppercase_buffer(buffer: *mut c_char, len: u32);
+    fn c_run_callback(cb: extern "C" fn(c_int), value: c_int);
+}
+
+extern "C" fn rust_callback(value: c_int) {
+    println!("[C Callback] Received value from C: {}", value);
+}
+
+#[tauri::command]
+fn ffi_add(a: i32, b: i32) -> i32 {
+    unsafe { c_add(a, b) }
+}
+
+#[tauri::command]
+fn ffi_greet(name: String) -> String {
+    let c_name = CString::new(name).expect("CString::new failed");
+    unsafe {
+        let ptr = c_greet(c_name.as_ptr());
+        let result = CStr::from_ptr(ptr).to_string_lossy().into_owned();
+        libc::free(ptr as *mut std::ffi::c_void); // Free memory allocated by C
+        result
+    }
+}
+
+#[tauri::command]
+fn ffi_uppercase(text: String) -> String {
+    let mut c_text = CString::new(text)
+        .expect("CString::new failed")
+        .into_bytes();
+    let len = c_text.len() as u32;
+    unsafe {
+        c_uppercase_buffer(c_text.as_mut_ptr() as *mut c_char, len);
+    }
+    String::from_utf8_lossy(&c_text).into_owned()
+}
+
+#[tauri::command]
+fn ffi_run_callback(value: i32) -> String {
+    unsafe {
+        c_run_callback(rust_callback, value);
+    }
+    format!("Callback executed for value {}. Check backend logs!", value)
 }
 
 // --- Todo Commands ---
@@ -231,7 +282,11 @@ pub fn run() {
             add_todo,
             list_todos,
             toggle_todo,
-            delete_todo
+            delete_todo,
+            ffi_add,
+            ffi_greet,
+            ffi_uppercase,
+            ffi_run_callback
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

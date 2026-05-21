@@ -1,4 +1,17 @@
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
+
+#[derive(Debug, Error, Clone, PartialEq, Serialize, Deserialize)]
+pub enum FrontendError {
+    #[error("File not found: {0}")]
+    NotFound(String),
+    #[error("Permission denied: {0}")]
+    PermissionDenied(String),
+    #[error("Internal error: {0}")]
+    Internal(String),
+    #[error("Invalid argument: {0}")]
+    InvalidArgument(String),
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct RegistryItem {
@@ -42,7 +55,6 @@ pub struct User {
 #[cfg(test)]
 mod tree_node_tests {
     use super::*;
-
     #[test]
     fn test_tree_node_serde_roundtrip() {
         let node = TreeNode {
@@ -86,7 +98,6 @@ mod tree_node_tests {
 #[cfg(test)]
 mod todo_tests {
     use super::*;
-
     #[test]
     fn test_todo_item_serde_roundtrip() {
         let item = TodoItem {
@@ -100,6 +111,7 @@ mod todo_tests {
         assert_eq!(item.id, deserialized.id);
         assert_eq!(item.title, deserialized.title);
         assert_eq!(item.completed, deserialized.completed);
+        assert_eq!(item.created_at, deserialized.created_at);
     }
 
     #[test]
@@ -114,6 +126,7 @@ mod todo_tests {
         assert_eq!(json["id"], 2);
         assert_eq!(json["title"], "Done");
         assert_eq!(json["completed"], true);
+        assert_eq!(json["created_at"], "2025-06-01");
     }
 
     #[test]
@@ -131,7 +144,6 @@ mod todo_tests {
 #[cfg(test)]
 mod json_todo_tests {
     use super::*;
-
     #[test]
     fn test_json_todo_serde_roundtrip() {
         let item = JsonTodo {
@@ -179,9 +191,28 @@ mod json_todo_tests {
 }
 
 #[cfg(test)]
-mod tests {
+mod frontend_error_tests {
     use super::*;
 
+    #[test]
+    fn test_frontend_error_variants() {
+        let err = FrontendError::NotFound("not found".to_string());
+        assert_eq!(err.to_string(), "File not found: not found");
+
+        let err = FrontendError::PermissionDenied("access denied".to_string());
+        assert_eq!(err.to_string(), "Permission denied: access denied");
+
+        let err = FrontendError::Internal("something broke".to_string());
+        assert_eq!(err.to_string(), "Internal error: something broke");
+
+        let err = FrontendError::InvalidArgument("bad input".to_string());
+        assert_eq!(err.to_string(), "Invalid argument: bad input");
+    }
+}
+
+#[cfg(test)]
+mod registry_item_tests {
+    use super::*;
     #[test]
     fn test_registry_item_serde_roundtrip() {
         let item = RegistryItem {
@@ -201,16 +232,16 @@ mod tests {
         let item = RegistryItem {
             name: "Test".into(),
             id: "t1".into(),
-            category: "utility".into(),
-            status: "dev".into(),
-            line_count: 100,
+            category: "component".into(),
+            status: "pinned".into(),
+            line_count: 10,
         };
         let json = serde_json::to_value(&item).unwrap();
         assert_eq!(json["name"], "Test");
         assert_eq!(json["id"], "t1");
-        assert_eq!(json["category"], "utility");
-        assert_eq!(json["status"], "dev");
-        assert_eq!(json["line_count"], 100);
+        assert_eq!(json["category"], "component");
+        assert_eq!(json["status"], "pinned");
+        assert_eq!(json["line_count"], 10);
     }
 
     #[test]
@@ -267,5 +298,7 @@ mod tests {
         };
         assert!(item.name.is_empty());
         assert!(item.id.is_empty());
+        assert!(item.category.is_empty());
+        assert!(item.status.is_empty());
     }
 }

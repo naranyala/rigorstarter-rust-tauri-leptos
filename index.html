@@ -17,11 +17,13 @@
     <link data-trunk rel="css" href="styles/table_demo.css" />
     <link data-trunk rel="css" href="styles/tabs.css" />
     <link data-trunk rel="css" href="styles/theme_demo.css" />
+    <link data-trunk rel="css" href="styles/thirdparty.css" />
     <link data-trunk rel="css" href="styles/tree_view_demo.css" />
     <link data-trunk rel="css" href="styles/todo_demo.css" />
     <link data-trunk rel="css" href="styles/toast_demo.css" />
     <link data-trunk rel="css" href="styles/utility.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+    <link rel="stylesheet" href="vendor/prism/prism-tomorrow.min.css" />
+    <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
     <link data-trunk rel="copy-dir" href="public" />
     <link data-trunk rel="rust" data-wasm-opt="z" />
   </head>
@@ -44,8 +46,11 @@
         }
       }, 10000);
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js"></script>
+    <script src="vendor/prism/prism.js"></script>
+    <script src="vendor/prism/components/prism-rust.min.js"></script>
+    <script src="vendor/leaflet/leaflet.js"></script>
+    <script src="vendor/mathjax/tex-mml-chtml.js"></script>
+    <script src="vendor/mermaid/mermaid.min.js"></script>
     <script>
       // MutationObserver to automatically highlight new code blocks
       const observer = new MutationObserver((mutations) => {

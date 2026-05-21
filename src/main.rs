@@ -1,22 +1,18 @@
+#![allow(dead_code)]
+
 mod app;
-mod components;
 mod core;
 mod services;
+mod shared;
+#[cfg(test)]
+mod tests;
+mod ui;
 
 use app::*;
 use leptos::prelude::*;
 
 fn main() {
     console_error_panic_hook::set_once();
-
-    // Remove loader immediately before mounting
-    if let Some(window) = web_sys::window() {
-        if let Some(document) = window.document() {
-            if let Some(loader) = document.get_element_by_id("app-loader") {
-                loader.remove();
-            }
-        }
-    }
 
     mount_to_body(|| {
         view! {
@@ -44,5 +40,13 @@ fn main() {
                 <App/>
             </ErrorBoundary>
         }
-    })
+    });
+
+    if let Some(window) = web_sys::window() {
+        if let Some(document) = window.document() {
+            if let Some(loader) = document.get_element_by_id("app-loader") {
+                loader.remove();
+            }
+        }
+    }
 }

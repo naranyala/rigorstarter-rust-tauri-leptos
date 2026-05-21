@@ -38,4 +38,29 @@ done < "$TEMPLATE_FILE"
 # Atomically move to target file
 mv "$TMP_FILE" "$TARGET_FILE"
 
-echo "Successfully generated $TARGET_FILE from $TEMPLATE_FILE."
+# Copy third-party vendor libraries from node_modules to public/
+VENDOR_DIR="public/vendor"
+rm -rf "$VENDOR_DIR"
+
+# Leaflet
+mkdir -p "$VENDOR_DIR/leaflet"
+cp thirdparty/node_modules/leaflet/dist/leaflet.js "$VENDOR_DIR/leaflet/"
+cp thirdparty/node_modules/leaflet/dist/leaflet.css "$VENDOR_DIR/leaflet/"
+cp -r thirdparty/node_modules/leaflet/dist/images "$VENDOR_DIR/leaflet/images"
+
+# Mermaid (minified bundle only)
+mkdir -p "$VENDOR_DIR/mermaid"
+cp thirdparty/node_modules/mermaid/dist/mermaid.min.js "$VENDOR_DIR/mermaid/"
+
+# MathJax (entry point + output directory for font loading)
+mkdir -p "$VENDOR_DIR/mathjax"
+cp thirdparty/node_modules/mathjax/tex-mml-chtml.js "$VENDOR_DIR/mathjax/"
+cp -r thirdparty/node_modules/mathjax/output "$VENDOR_DIR/mathjax/"
+
+# Prism (syntax highlighting)
+mkdir -p "$VENDOR_DIR/prism/components"
+cp thirdparty/node_modules/prismjs/prism.js "$VENDOR_DIR/prism/"
+cp thirdparty/node_modules/prismjs/components/prism-rust.min.js "$VENDOR_DIR/prism/components/"
+cp thirdparty/node_modules/prismjs/themes/prism-tomorrow.min.css "$VENDOR_DIR/prism/"
+
+echo "Copied vendor libraries to $VENDOR_DIR."

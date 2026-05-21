@@ -1,4 +1,5 @@
-use crate::components::result_view::ResultView;
+use crate::core::models::FrontendError;
+use crate::ui::result_view::ResultView;
 use leptos::prelude::*;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::spawn_local;
@@ -11,7 +12,9 @@ extern "C" {
 
 #[component]
 pub fn UtilityCodeBlock(name: String, id: String) -> impl IntoView {
-    let (state, set_state) = signal(Result::<String, String>::Err("Initial state".to_string()));
+    let (state, set_state) = signal(Result::<String, FrontendError>::Err(
+        FrontendError::Internal("Initial state".to_string()),
+    ));
     let (is_loading, set_is_loading) = signal(true);
 
     let id_for_spawn = id.clone();
@@ -26,11 +29,17 @@ pub fn UtilityCodeBlock(name: String, id: String) -> impl IntoView {
                 if let Some(content) = val.as_string() {
                     set_state.set(Ok(content));
                 } else {
-                    set_state.set(Err("Could not parse source code as string".to_string()));
+                    set_state.set(Err(FrontendError::Internal(
+                        "Could not parse source code as string".to_string(),
+                    )));
                 }
             }
             Err(e) => {
-                set_state.set(Err(format!("Backend error: {:?}", e)));
+                let e_clone = e.clone();
+                let err: FrontendError = serde_wasm_bindgen::from_value(e).unwrap_or_else(|_| {
+                    FrontendError::Internal(format!("Backend error: {:?}", e_clone))
+                });
+                set_state.set(Err(err));
             }
         }
         set_is_loading.set(false);

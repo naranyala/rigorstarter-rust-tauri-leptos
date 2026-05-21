@@ -3,6 +3,7 @@
 src-tauri/target
 
 /build
+/thirdparty/node_modules
 
 # Trunk
 /dist

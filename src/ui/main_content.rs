@@ -1,15 +1,22 @@
-use crate::components::accordion::AccordionDemo;
-use crate::components::dashboard::Dashboard;
-use crate::components::drawer::DrawerDemo;
-use crate::components::json_todo_demo::JsonTodoDemo;
-use crate::components::markdown_demo::MarkdownDemo;
-use crate::components::table_demo::TableDemo;
-use crate::components::theme_demo::ThemeDemo;
-use crate::components::toast_demo::ToastDemo;
-use crate::components::todo_demo::TodoDemo;
-use crate::components::tree_view_demo::TreeViewDemo;
-use crate::components::utility_code_block::UtilityCodeBlock;
 use crate::services::{NavigationService, RegistryService, TodoService};
+use crate::ui::codeblock::CodeBlockView;
+use crate::ui::lightbox::Lightbox;
+use crate::ui::pages::accordion::AccordionDemo;
+use crate::ui::pages::audio_player::AudioPlayerDemoView;
+use crate::ui::pages::audio_recorder::AudioRecorderView;
+use crate::ui::pages::calendar::Calendar;
+use crate::ui::pages::dashboard::Dashboard;
+use crate::ui::pages::drawer::DrawerDemo;
+use crate::ui::pages::image_viewer::ImageViewer;
+use crate::ui::pages::json_todo::JsonTodoDemo;
+use crate::ui::pages::markdown_demo::MarkdownDemo;
+use crate::ui::pages::microphone::MicrophoneDemo;
+use crate::ui::pages::table_demo::TableDemo;
+use crate::ui::pages::theme_demo::ThemeDemo;
+use crate::ui::pages::toast_demo::ToastDemo;
+use crate::ui::pages::todo_demo::TodoDemo;
+use crate::ui::pages::tree_view::TreeViewDemo;
+use crate::ui::utility_code_block::UtilityCodeBlock;
 use leptos::prelude::*;
 
 #[component]
@@ -18,6 +25,7 @@ pub fn MainContent() -> impl IntoView {
         use_context::<RegistryService>().expect("RegistryService should be provided");
     let nav_service =
         use_context::<NavigationService>().expect("NavigationService should be provided");
+    let todo_service = use_context::<TodoService>().expect("TodoService should be provided");
 
     // Memoize the current item to prevent re-searching the registry on every render
     let current_item = Memo::new(move |_| {
@@ -48,35 +56,69 @@ pub fn MainContent() -> impl IntoView {
                 <AccordionDemo />
             </div>
 
-            // 3. Drawer Slot
+            // 3. Audio Player Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("audio_player") { "block" } else { "none" }>
+                <AudioPlayerDemoView />
+            </div>
+
+            // 4. Audio Recorder Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("audio_recorder") { "block" } else { "none" }>
+                <AudioRecorderView />
+            </div>
+
+            // 5. Calendar Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("calendar") { "block" } else { "none" }>
+                <Calendar />
+            </div>
+
+            // 6. Code Block Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("codeblock") { "block" } else { "none" }>
+                <CodeBlockView />
+            </div>
+
+            // 7. Drawer Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("drawer") { "block" } else { "none" }>
                 <DrawerDemo />
             </div>
 
-            // 4. Tabs Slot
+            // 8. Image Viewer Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("image_viewer") { "block" } else { "none" }>
+                <ImageViewer />
+            </div>
+
+            // 9. Lightbox Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("lightbox") { "block" } else { "none" }>
+                <Lightbox />
+            </div>
+
+            // 10. Microphone Slot
+            <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("microphone") { "block" } else { "none" }>
+                <MicrophoneDemo />
+            </div>
+
+            // 11. Tabs Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("tabs") { "block" } else { "none" }>
-                <crate::components::tabs::TabsDemo />
+                <crate::ui::pages::tabs::TabsDemo />
             </div>
 
-            // 5. Modal Slot
+            // 12. Modal Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("modal") { "block" } else { "none" }>
-                <crate::components::modal::ModalDemo />
+                <crate::ui::modal::ModalDemo />
             </div>
 
-            // 6. Theme Slot
+            // 13. Theme Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("theme") { "block" } else { "none" }>
                 <ThemeDemo />
             </div>
 
-            // 7. Toast Slot
+            // 14. Toast Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("toast") { "block" } else { "none" }>
                 <ToastDemo />
             </div>
 
-            // 8. Todo Slot
+            // 15. Todo Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("todo") { "block" } else { "none" }>
                 {move || {
-                    let todo_service = use_context::<TodoService>().expect("TodoService should be provided");
                     view! {
                         <TodoDemo
                             items=todo_service.items
@@ -88,30 +130,30 @@ pub fn MainContent() -> impl IntoView {
                 }}
             </div>
 
-            // 9. Tree View Slot
+            // 16. Tree View Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("tree_view") { "block" } else { "none" }>
                 <TreeViewDemo />
             </div>
 
-            // 10. JSON Todo Slot
+            // 17. JSON Todo Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("json_todo") { "block" } else { "none" }>
                 <JsonTodoDemo />
             </div>
 
-            // 11. Table Demo Slot
+            // 18. Table Demo Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("table_demo") { "block" } else { "none" }>
                 <TableDemo />
             </div>
 
-            // 12. Markdown Demo Slot
+            // 19. Markdown Demo Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("markdown_demo") { "block" } else { "none" }>
                 <MarkdownDemo />
             </div>
 
-            // 13. Dynamic Utility Slot
+            // 20. Dynamic Utility Slot
             <div style:display=move || {
                 let active = nav_service.active_demo.get();
-                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("drawer") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") && active.as_deref() != Some("todo") && active.as_deref() != Some("json_todo") && active.as_deref() != Some("tree_view") && active.as_deref() != Some("table_demo") && active.as_deref() != Some("markdown_demo") {
+                if active.is_some() && active.as_deref() != Some("accordion") && active.as_deref() != Some("audio_player") && active.as_deref() != Some("audio_recorder") && active.as_deref() != Some("calendar") && active.as_deref() != Some("codeblock") && active.as_deref() != Some("drawer") && active.as_deref() != Some("image_viewer") && active.as_deref() != Some("lightbox") && active.as_deref() != Some("microphone") && active.as_deref() != Some("tabs") && active.as_deref() != Some("modal") && active.as_deref() != Some("theme") && active.as_deref() != Some("toast") && active.as_deref() != Some("todo") && active.as_deref() != Some("json_todo") && active.as_deref() != Some("tree_view") && active.as_deref() != Some("table_demo") && active.as_deref() != Some("markdown_demo") {
                     "block"
                 } else {
                     "none"

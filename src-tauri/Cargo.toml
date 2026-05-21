@@ -16,6 +16,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+cc = "1.2.62"
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon"] }
@@ -29,4 +30,5 @@ sysinfo = "0.31"
 notify = "6.1"
 rusqlite = { version = "0.31", features = ["bundled"] }
 tokio = { version = "1", features = ["full"] }
+libc = "0.2.186"
 

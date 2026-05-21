@@ -26,6 +26,8 @@ To start the application in development mode:
 sh run.sh
 ```
 
+**Note on HTML Generation**: This project uses `index.html.default` as the source of truth for the frontend entry point. The `run.sh` script calls `scripts/generate_css_imports.sh` to programmatically scan the `styles/` directory and inject all CSS `<link>` tags into `index.html`. Please make any structural HTML changes in `index.html.default` rather than `index.html`.
+
 ### Production Build
 
 To build the application for production:
@@ -38,11 +40,12 @@ npx @tauri-apps/cli build
 
 - `src/core/`: Domain models and pure business logic.
 - `src/services/`: Stateful services and dependency injection.
-- `src/components/`: UI views and components.
+- `src/ui/`: UI views and components (flattened structure).
 - `src-tauri/`: Tauri backend Rust code and configuration.
 - `docs/`: Comprehensive project documentation.
 - `Trunk.toml`: Configuration for the Trunk WASM bundler.
-- `index.html.default`: Template for the frontend entry point.
+- `index.html.default`: Source template for the frontend entry point.
+- `index.html`: Generated entry point (Do not edit manually).
 
 ## Documentation
 

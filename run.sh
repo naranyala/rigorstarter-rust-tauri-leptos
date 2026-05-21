@@ -20,15 +20,14 @@ echo "Checking frontend build health..."
 # Update CSS imports in index.html programmatically
 ./scripts/generate_css_imports.sh
 
-# Run a fast build check without serving
-if ! trunk build --quiet; then
+# Use cargo check for a faster compilation check instead of a full trunk build
+if ! cargo check --target wasm32-unknown-unknown; then
     echo "------------------------------------------------------------"
-    echo "❌ FRONTEND BUILD FAILED"
+    echo "❌ FRONTEND CHECK FAILED"
     echo "Please fix the Rust compilation errors in the terminal above."
     echo "------------------------------------------------------------"
     exit 1
 fi
 
-echo "✅ Code quality and frontend build healthy. Starting development mode..."
-rm -rf dist
+echo "✅ Code quality and frontend check healthy. Starting development mode..."
 npx @tauri-apps/cli dev

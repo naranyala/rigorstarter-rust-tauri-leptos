@@ -35,7 +35,8 @@ impl RegistryService {
         let set_loading = self.set_loading;
 
         spawn_local(async move {
-            let result = invoke("get_registry", JsValue::NULL).await;
+            let promise = invoke("get_registry", JsValue::NULL);
+            let result = wasm_bindgen_futures::JsFuture::from(promise).await;
             match result {
                 Ok(val) => {
                     if let Ok(items) = serde_wasm_bindgen::from_value::<Vec<RegistryItem>>(val) {
@@ -121,7 +122,20 @@ impl ThemeService {
     }
 }
 
+pub mod audio;
+pub mod browser;
+pub mod dom;
+pub mod error_handler;
+pub mod error_service;
+pub mod event_bus;
+pub mod file_system;
+pub mod sidebar;
+pub mod storage;
 pub mod todo;
+
+pub use error_service::{ErrorService, ErrorSeverity};
+pub use file_system::AppFileSystem;
+pub use sidebar::SidebarService;
 pub use todo::TodoService;
 
 #[cfg(test)]
