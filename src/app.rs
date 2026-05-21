@@ -52,73 +52,67 @@ const PAGES: &[(&str, &str, &str)] = &[
 fn PageContent(
     active_page: RwSignal<Option<&'static str>>,
     todo_service: TodoService,
-    _tick: RwSignal<u32>,
+    search: RwSignal<String>,
 ) -> impl IntoView {
-    // Map of page IDs to NodeRefs
-    let mut refs = std::collections::HashMap::new();
-    
-    // We'll define the pages and their IDs
-    let page_ids = [
-        "dashboard", "accordion", "tabs", "drawer", "tree_view", "table_demo",
-        "calendar", "image_viewer", "theme_demo", "toast_demo", "ffi_demo",
-        "json_todo", "markdown_demo", "leaflet", "mathjax", "mermaid",
-        "audio_player", "audio_recorder", "microphone", "todo_demo",
-    ];
-
-    // Create a NodeRef and an Effect for each page
-    let page_elements = page_ids.into_iter().map(|id| {
-        let node_ref = NodeRef::<leptos::html::Div>::new();
-        let node_ref_clone = node_ref.clone();
-        
-        Effect::new(move |_| {
-            if let Some(el) = node_ref_clone.get() {
-                let display = if active_page.get() == Some(id) { "block" } else { "none" };
-                let _ = el.style().set_property("display", display);
-            }
-        });
-        (id, node_ref)
-    }).collect::<Vec<_>>();
-
-    // Empty state ref
-    let empty_ref = NodeRef::<leptos::html::Div>::new();
-    let empty_ref_clone = empty_ref.clone();
-    Effect::new(move |_| {
-        if let Some(el) = empty_ref_clone.get() {
-            let display = if active_page.get().is_none() { "block" } else { "none" };
-            let _ = el.style().set_property("display", display);
+    let render_page = move |id: &'static str| match id {
+        "dashboard" => view! { <Dashboard /> }.into_any(),
+        "accordion" => view! { <AccordionDemo /> }.into_any(),
+        "tabs" => view! { <TabsDemo /> }.into_any(),
+        "drawer" => view! { <DrawerDemo /> }.into_any(),
+        "tree_view" => view! { <TreeViewDemo /> }.into_any(),
+        "table_demo" => view! { <TableDemo /> }.into_any(),
+        "calendar" => view! { <Calendar /> }.into_any(),
+        "image_viewer" => view! { <ImageViewer /> }.into_any(),
+        "theme_demo" => view! { <ThemeDemo /> }.into_any(),
+        "toast_demo" => view! { <ToastDemo /> }.into_any(),
+        "ffi_demo" => view! { <FfiDemo /> }.into_any(),
+        "json_todo" => view! { <JsonTodoDemo /> }.into_any(),
+        "markdown_demo" => view! { <MarkdownDemo /> }.into_any(),
+        "leaflet" => view! { <LeafletDemo /> }.into_any(),
+        "mathjax" => view! { <MathJaxDemo /> }.into_any(),
+        "mermaid" => view! { <MermaidDemo /> }.into_any(),
+        "audio_player" => view! { <AudioPlayerDemoView /> }.into_any(),
+        "audio_recorder" => view! { <AudioRecorderView /> }.into_any(),
+        "microphone" => view! { <MicrophoneDemo /> }.into_any(),
+        "todo_demo" => view! {
+            <TodoDemo
+                items=todo_service.items
+                on_add=Callback::new(move |title| todo_service.add_todo(title))
+                on_toggle=Callback::new(move |id| todo_service.toggle_todo(id))
+                on_delete=Callback::new(move |id| todo_service.delete_todo(id))
+            />
         }
-    });
+        .into_any(),
+        _ => view! { <div>"Not Found"</div> }.into_any(),
+    };
 
     view! {
         <main class="main-content">
-            <div node_ref=empty_ref class="empty-state">"Select a page from the sidebar"</div>
-            <div node_ref=page_elements[0].1 style="display: none;"><Dashboard /></div>
-            <div node_ref=page_elements[1].1 style="display: none;"><AccordionDemo /></div>
-            <div node_ref=page_elements[2].1 style="display: none;"><TabsDemo /></div>
-            <div node_ref=page_elements[3].1 style="display: none;"><DrawerDemo /></div>
-            <div node_ref=page_elements[4].1 style="display: none;"><TreeViewDemo /></div>
-            <div node_ref=page_elements[5].1 style="display: none;"><TableDemo /></div>
-            <div node_ref=page_elements[6].1 style="display: none;"><Calendar /></div>
-            <div node_ref=page_elements[7].1 style="display: none;"><ImageViewer /></div>
-            <div node_ref=page_elements[8].1 style="display: none;"><ThemeDemo /></div>
-            <div node_ref=page_elements[9].1 style="display: none;"><ToastDemo /></div>
-            <div node_ref=page_elements[10].1 style="display: none;"><FfiDemo /></div>
-            <div node_ref=page_elements[11].1 style="display: none;"><JsonTodoDemo /></div>
-            <div node_ref=page_elements[12].1 style="display: none;"><MarkdownDemo /></div>
-            <div node_ref=page_elements[13].1 style="display: none;"><LeafletDemo /></div>
-            <div node_ref=page_elements[14].1 style="display: none;"><MathJaxDemo /></div>
-            <div node_ref=page_elements[15].1 style="display: none;"><MermaidDemo /></div>
-            <div node_ref=page_elements[16].1 style="display: none;"><AudioPlayerDemoView /></div>
-            <div node_ref=page_elements[17].1 style="display: none;"><AudioRecorderView /></div>
-            <div node_ref=page_elements[18].1 style="display: none;"><MicrophoneDemo /></div>
-            <div node_ref=page_elements[19].1 style="display: none;">
-                <TodoDemo
-                    items=todo_service.items
-                    on_add=Callback::new(move |title| todo_service.add_todo(title))
-                    on_toggle=Callback::new(move |id| todo_service.toggle_todo(id))
-                    on_delete=Callback::new(move |id| todo_service.delete_todo(id))
-                />
-            </div>
+            {move || {
+                let active = active_page.get();
+                if let Some(id) = active {
+                    view! {
+                        <div class="page-wrapper">
+                            {render_page(id)}
+                        </div>
+                    }.into_any()
+                } else {
+                    view! { <div class="empty-state">"Select a page from the sidebar"</div> }.into_any()
+                }
+            }}
+            <span
+                style=move || {
+                    let q = search.get().to_lowercase();
+                    let display = if q.is_empty() || PAGES.iter().any(|(n, _, c)| n.to_lowercase().contains(&q) || c.to_lowercase().contains(&q)) {
+                        "none"
+                    } else {
+                        "block"
+                    };
+                    format!("display: {}; color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem;", display)
+                }
+            >
+                "No results found"
+            </span>
         </main>
     }
 }
@@ -128,7 +122,6 @@ pub fn App() -> impl IntoView {
     let active_page = RwSignal::new(None::<&'static str>);
     let search = RwSignal::new(String::new());
     let is_dark = RwSignal::new(false);
-    let tick = RwSignal::new(0u32);
 
     Effect::new(move |_| {
         let dark = is_dark.get();
@@ -138,6 +131,15 @@ pub fn App() -> impl IntoView {
             .and_then(|d| d.body())
         {
             let _ = body.class_list().toggle_with_force("dark", dark);
+        }
+    });
+
+    Effect::new(move |_| {
+        let _ = active_page.get();
+        if let Some(window) = web_sys::window() {
+            if let Some(body) = window.document().and_then(|d| d.body()) {
+                let _ = body.offset_height();
+            }
         }
     });
 
@@ -151,7 +153,6 @@ pub fn App() -> impl IntoView {
 
                 let w = window.clone();
                 let ap = active_page;
-                let t = tick;
                 let closure = Closure::once_into_js(move || {
                     if let Some(body) = w.document().and_then(|d| d.body()) {
                         let _ = body.offset_height();
@@ -160,7 +161,6 @@ pub fn App() -> impl IntoView {
                         }
                     }
                     ap.update(|_| {});
-                    t.update(|val| *val += 1);
                 });
                 let _ = window.set_timeout_with_callback_and_timeout_and_arguments_0(
                     closure.unchecked_ref(),
@@ -247,29 +247,27 @@ pub fn App() -> impl IntoView {
                                              let page_id = *page_id;
                                              let cat = *cat;
                                              let q = search;
-                                             
-                                             let node_ref = NodeRef::<leptos::html::Button>::new();
-                                             let node_ref_clone = node_ref.clone();
-                                             Effect::new(move |_| {
-                                                 if let Some(el) = node_ref_clone.get() {
-                                                     let query = q.get().to_lowercase();
-                                                     let display = if query.is_empty() || name.to_lowercase().contains(&query) || cat.to_lowercase().contains(&query) {
-                                                         "block"
-                                                     } else {
-                                                         "none"
-                                                     };
-                                                     let _ = el.style().set_property("display", display);
-                                                 }
-                                             });
 
                                              view! {
                                                  <button
-                                                     node_ref=node_ref
                                                      class="page-list-item"
-                                                     style="text-align: left; width: 100%;"
+                                                     style=move || {
+                                                         let query = q.get().to_lowercase();
+                                                         let display = if query.is_empty() || name.to_lowercase().contains(&query) || cat.to_lowercase().contains(&query) {
+                                                             "block"
+                                                         } else {
+                                                             "none"
+                                                         };
+                                                         format!("text-align: left; width: 100%; display: {};", display)
+                                                     }
                                                      on:click=move |_| {
-                                                         leptos::logging::log!("navigating to: {}", page_id);
-                                                         active_page.set(Some(page_id));
+                                                         leptos::logging::log!("Sidebar click: navigating to: {}", page_id);
+                                                         let ap = active_page;
+                                                         let pid = page_id;
+                                                         let closure = Closure::once_into_js(move || {
+                                                             ap.set(Some(pid));
+                                                         });
+                                                         let _ = web_sys::window().unwrap().request_animation_frame(closure.as_ref().unchecked_ref());
                                                      }
                                                  >
                                                      <span style="font-weight: 500;">{name}</span>
@@ -280,30 +278,19 @@ pub fn App() -> impl IntoView {
                                 </div>
                             }
                         }).collect_view()}
-                        // "No results found" message - shown only when search has no matches.
-                        <span
-                            style:display=move || {
-                                let _ = tick.get();
-                                let q = search.get().to_lowercase();
-                                if q.is_empty() { "none" } else {
-                                    let has_match = PAGES.iter().any(|(n, _, c)| n.to_lowercase().contains(&q) || c.to_lowercase().contains(&q));
-                                    if has_match { "none" } else { "block" }
-                                }
-                            }
-                            style="color: var(--text-muted); font-size: 0.8rem; padding: 0.5rem;"
-                        >
-                            "No results found"
-                        </span>
                     </div>
                 </div>
                 <div class="sidebar-footer">
-                    <button class="btn-icon" on:click=move |_| is_dark.update(|d| *d = !*d)>
+                    <button class="btn-icon" on:click=move |_| {
+                        leptos::logging::log!("Theme toggle clicked");
+                        is_dark.update(|d| *d = !*d);
+                    }>
                         {move || if is_dark.get() { "☀️" } else { "🌙" }}
                     </button>
                 </div>
             </nav>
 
-            <PageContent active_page todo_service tick />
+            <PageContent active_page todo_service search />
         </div>
     }
 }

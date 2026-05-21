@@ -27,6 +27,15 @@ This document outlines the patterns and constraints for the Rigorstarter Rust-Ta
 - **Owned Data:** When mapping over signals (e.g., `registry.get().iter()`), avoid returning references (`&str`) in the resulting collection.
 - **The Fix:** Use `.clone()` or `.to_string()` to return owned `String`s. Returning references to temporary values created during `.get()` will cause compilation errors (`E0515`).
 
+### 6. Solving Rendering Stalls & UI Lag
+- **The Problem:** In some environments, state changes may occur, but the UI doesn't repaint immediately (the app feels "frozen" until a global event like a theme toggle occurs).
+- **The Fix (The "Wake Up" Pattern):**
+  1. **Lazy Rendering:** Never render all pages and hide them with `display: none`. Only render the active component to keep the DOM lean.
+  2. **Schedule Updates:** For critical UI transitions (like navigation), wrap the state update in `requestAnimationFrame` to sync with the browser's paint cycle.
+     - ✅ `requestAnimationFrame(|_| active_page.set(Some(id)))`
+  3. **Force Reflow:** If the UI still lags, use a "forced reflow" in an `Effect` to kick the renderer.
+     - ✅ `Effect::new(move |_| { active_page.get(); let _ = document.body().offset_height(); })`
+
 ---
 
 ## 🛠️ Backend (Tauri)
