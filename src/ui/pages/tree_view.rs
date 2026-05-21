@@ -110,3 +110,50 @@ pub fn TreeViewDemo() -> impl IntoView {
         </div>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_tree_node_expansion_logic() {
+        let _rt = setup_runtime();
+        let (is_expanded, set_is_expanded) = signal(true);
+        let has_children = true;
+
+        let toggle = move || {
+            if has_children {
+                set_is_expanded.update(|v| *v = !*v);
+            }
+        };
+
+        assert!(is_expanded.get());
+        toggle();
+        assert!(!is_expanded.get());
+        toggle();
+        assert!(is_expanded.get());
+    }
+
+    #[test]
+    fn test_tree_node_no_children_no_toggle() {
+        let _rt = setup_runtime();
+        let (is_expanded, set_is_expanded) = signal(true);
+        let has_children = false;
+
+        let toggle = move || {
+            if has_children {
+                set_is_expanded.update(|v| *v = !*v);
+            }
+        };
+
+        assert!(is_expanded.get());
+        toggle();
+        assert!(is_expanded.get()); // Should NOT change
+    }
+}

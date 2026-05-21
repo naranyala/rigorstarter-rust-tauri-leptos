@@ -70,3 +70,46 @@ pub fn TodoDemo(
         </div>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_todo_add_logic() {
+        let _rt = setup_runtime();
+        let (new_title, set_new_title) = signal(String::new());
+        let added_titles = RwSignal::new(Vec::<String>::new());
+
+        let on_add = Callback::new(move |title: String| {
+            added_titles.update(|list| list.push(title));
+        });
+
+        let handle_add = move || {
+            let title = new_title.get();
+            if title.trim().is_empty() {
+                return;
+            }
+            on_add.run(title);
+            set_new_title.set(String::new());
+        };
+
+        // Test valid add
+        set_new_title.set("Test Todo".to_string());
+        handle_add();
+        assert_eq!(added_titles.get().len(), 1);
+        assert_eq!(added_titles.get()[0], "Test Todo");
+        assert!(new_title.get().is_empty());
+
+        // Test empty add
+        set_new_title.set("  ".to_string());
+        handle_add();
+        assert_eq!(added_titles.get().len(), 1);
+    }
+}

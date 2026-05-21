@@ -8,12 +8,6 @@ pub struct PageInfo {
 
 pub const PAGES: &[PageInfo] = &[
     PageInfo {
-        name: "Dashboard",
-        id: "dashboard",
-        category: "Components",
-        desc: "Pinned and featured component overview",
-    },
-    PageInfo {
         name: "Accordion",
         id: "accordion",
         category: "Components",
@@ -56,12 +50,6 @@ pub const PAGES: &[PageInfo] = &[
         desc: "Lightbox image gallery",
     },
     PageInfo {
-        name: "Theme Demo",
-        id: "theme_demo",
-        category: "Components",
-        desc: "Dark mode and theme showcase",
-    },
-    PageInfo {
         name: "Toast",
         id: "toast_demo",
         category: "Components",
@@ -70,43 +58,43 @@ pub const PAGES: &[PageInfo] = &[
     PageInfo {
         name: "FFI Demo",
         id: "ffi_demo",
-        category: "Demos",
+        category: "Exploration",
         desc: "Rust FFI interop example",
     },
     PageInfo {
         name: "Todo Demo",
         id: "todo_demo",
-        category: "Demos",
+        category: "Exploration",
         desc: "Interactive todo list",
     },
     PageInfo {
         name: "JSON Todo",
         id: "json_todo",
-        category: "Demos",
+        category: "Exploration",
         desc: "JSON-serialized todo manager",
     },
     PageInfo {
         name: "Markdown",
         id: "markdown_demo",
-        category: "Demos",
+        category: "Exploration",
         desc: "Markdown rendering demo",
     },
     PageInfo {
         name: "Audio Player",
         id: "audio_player",
-        category: "Media",
+        category: "Exploration",
         desc: "Audio file playback",
     },
     PageInfo {
         name: "Audio Recorder",
         id: "audio_recorder",
-        category: "Media",
+        category: "Exploration",
         desc: "Audio recording with Tauri",
     },
     PageInfo {
         name: "Microphone",
         id: "microphone",
-        category: "Media",
+        category: "Exploration",
         desc: "Live microphone input",
     },
 ];

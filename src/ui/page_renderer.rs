@@ -4,7 +4,6 @@ use crate::ui::pages::accordion::AccordionDemo;
 use crate::ui::pages::audio_player::AudioPlayerDemoView;
 use crate::ui::pages::audio_recorder::AudioRecorderView;
 use crate::ui::pages::calendar::Calendar;
-use crate::ui::pages::dashboard::Dashboard;
 use crate::ui::pages::drawer::DrawerDemo;
 use crate::ui::pages::ffi_demo::FfiDemo;
 use crate::ui::pages::image_viewer::ImageViewer;
@@ -32,15 +31,14 @@ pub fn PageRenderer() -> impl IntoView {
                         class="btn-secondary"
                         style="font-size: 0.85rem; padding: 0.35rem 0.9rem;"
                         on:click=move |_| {
-                            leptos::logging::log!("back to dashboard");
+                            leptos::logging::log!("going back to main view");
                             active_page.0.set(None);
                         }
                     >
-                        "← Back to Dashboard"
+                        "← Back to Main"
                     </button>
                 </div>
                 {move || match active_page.0.get() {
-                    Some("dashboard") => view! { <Dashboard /> }.into_any(),
                     Some("accordion") => view! { <AccordionDemo /> }.into_any(),
                     Some("tabs") => view! { <TabsDemo /> }.into_any(),
                     Some("drawer") => view! { <DrawerDemo /> }.into_any(),

@@ -19,3 +19,26 @@ pub fn DrawerDemo() -> impl IntoView {
         </div>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_drawer_toggle_logic() {
+        let _rt = setup_runtime();
+        let (is_open, set_is_open) = signal(false);
+
+        assert!(!is_open.get());
+        set_is_open.set(true);
+        assert!(is_open.get());
+        set_is_open.set(false);
+        assert!(!is_open.get());
+    }
+}

@@ -4,7 +4,6 @@ use crate::ui::pages::accordion::AccordionDemo;
 use crate::ui::pages::audio_player::AudioPlayerDemoView;
 use crate::ui::pages::audio_recorder::AudioRecorderView;
 use crate::ui::pages::calendar::Calendar;
-use crate::ui::pages::dashboard::Dashboard;
 use crate::ui::pages::drawer::DrawerDemo;
 use crate::ui::pages::ffi_demo::FfiDemo;
 use crate::ui::pages::image_viewer::ImageViewer;
@@ -23,7 +22,6 @@ use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
 
 const PAGES: &[(&str, &str, &str)] = &[
-    ("Dashboard", "dashboard", "Components"),
     ("Accordion", "accordion", "Components"),
     ("Tabs", "tabs", "Components"),
     ("Drawer", "drawer", "Components"),
@@ -31,18 +29,17 @@ const PAGES: &[(&str, &str, &str)] = &[
     ("Table", "table_demo", "Components"),
     ("Calendar", "calendar", "Components"),
     ("Image Viewer", "image_viewer", "Components"),
-    ("Theme Demo", "theme_demo", "Components"),
     ("Toast", "toast_demo", "Components"),
-    ("FFI Demo", "ffi_demo", "Demos"),
-    ("Todo Demo", "todo_demo", "Demos"),
-    ("JSON Todo", "json_todo", "Demos"),
-    ("Markdown", "markdown_demo", "Demos"),
-    ("Leaflet", "leaflet", "3rd Party"),
-    ("MathJax", "mathjax", "3rd Party"),
-    ("Mermaid", "mermaid", "3rd Party"),
-    ("Audio Player", "audio_player", "Media"),
-    ("Audio Recorder", "audio_recorder", "Media"),
-    ("Microphone", "microphone", "Media"),
+    ("FFI Demo", "ffi_demo", "Exploration"),
+    ("Todo Demo", "todo_demo", "Exploration"),
+    ("JSON Todo", "json_todo", "Exploration"),
+    ("Markdown", "markdown_demo", "Exploration"),
+    ("Leaflet", "leaflet", "Exploration"),
+    ("MathJax", "mathjax", "Exploration"),
+    ("Mermaid", "mermaid", "Exploration"),
+    ("Audio Player", "audio_player", "Exploration"),
+    ("Audio Recorder", "audio_recorder", "Exploration"),
+    ("Microphone", "microphone", "Exploration"),
 ];
 
 /// Renders all pages statically; the active page is shown via `style:display`.
@@ -55,7 +52,6 @@ fn PageContent(
     search: RwSignal<String>,
 ) -> impl IntoView {
     let render_page = move |id: &'static str| match id {
-        "dashboard" => view! { <Dashboard /> }.into_any(),
         "accordion" => view! { <AccordionDemo /> }.into_any(),
         "tabs" => view! { <TabsDemo /> }.into_any(),
         "drawer" => view! { <DrawerDemo /> }.into_any(),
@@ -122,6 +118,7 @@ pub fn App() -> impl IntoView {
     let active_page = RwSignal::new(None::<&'static str>);
     let search = RwSignal::new(String::new());
     let is_dark = RwSignal::new(false);
+    let sidebar_open = RwSignal::new(false);
 
     Effect::new(move |_| {
         let dark = is_dark.get();
@@ -213,24 +210,50 @@ pub fn App() -> impl IntoView {
     };
 
     view! {
-        <div class="app-container">
+        <div class="app-container" class:sidebar-open=move || sidebar_open.get()>
+            <div class="sidebar-overlay" on:click=move |_| sidebar_open.set(false) />
             <nav class="sidebar">
-                <div class="sidebar-brand" style="cursor: pointer;" on:click=move |_| {
-                    search.set(String::new());
-                    active_page.set(None);
-                }>
-                    "RigorStarter"
+                <div style="display: flex; align-items: center; justify-content: space-between; padding-right: 1rem;">
+                    <div class="sidebar-brand" style="cursor: pointer;" on:click=move |_| {
+                        search.set(String::new());
+                        active_page.set(None);
+                    }>
+                        "RigorStarter"
+                    </div>
+                    <button class="btn-icon" style="font-size: 1.2rem; background: none; border: none; cursor: pointer;" on:click=move |_| {
+                        leptos::logging::log!("Theme toggle clicked");
+                        is_dark.update(|d| *d = !*d);
+                    }>
+                        {move || if is_dark.get() { "☀️" } else { "🌙" }}
+                    </button>
+                </div>
+                <div style="padding: 0 1rem 1.5rem 1rem;">
+                    <div style="position: relative; display: flex; align-items: center;">
+                        <input
+                            type="text"
+                            placeholder="Search pages..."
+                            style="width: 100%; padding: 0.6rem 2.5rem 0.6rem 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--secondary-bg); color: var(--text-main); font-size: 0.9rem; outline: none; box-sizing: border-box;"
+                            on:input=move |ev| {
+                                search.set(event_target_value(&ev));
+                            }
+                        />
+                        {move || if search.get().is_empty() {
+                            view! { <div style="display: none;">"✕"</div> }.into_any()
+                        } else {
+                            view! {
+                                <span
+                                    style="position: absolute; right: 0.75rem; cursor: pointer; color: var(--text-muted); font-size: 0.8rem; user-select: none;"
+                                    on:click=move |_| {
+                                        search.set(String::new());
+                                    }
+                                >
+                                    "✕"
+                                </span>
+                            }.into_any()
+                        }}
+                    </div>
                 </div>
                 <div class="sidebar-content">
-                    <input
-                        type="text"
-                        placeholder="Search pages..."
-                        style="width: 100%; padding: 0.6rem 0.75rem; border: 1px solid var(--border-color); border-radius: 0.5rem; background: var(--secondary-bg); color: var(--text-main); font-size: 0.9rem; outline: none; box-sizing: border-box;"
-                        on:input=move |ev| {
-                            search.set(event_target_value(&ev));
-                        }
-                    />
-
                     <div class="sidebar-nav">
                         // Render all pages statically; filter via reactive style:display.
                         // This avoids the {move || ...} reactive-block approach which has a
@@ -266,6 +289,7 @@ pub fn App() -> impl IntoView {
                                                          let pid = page_id;
                                                          let closure = Closure::once_into_js(move || {
                                                              ap.set(Some(pid));
+                                                             sidebar_open.set(false);
                                                          });
                                                          let _ = web_sys::window().unwrap().request_animation_frame(closure.as_ref().unchecked_ref());
                                                      }
@@ -280,15 +304,19 @@ pub fn App() -> impl IntoView {
                         }).collect_view()}
                     </div>
                 </div>
-                <div class="sidebar-footer">
-                    <button class="btn-icon" on:click=move |_| {
-                        leptos::logging::log!("Theme toggle clicked");
-                        is_dark.update(|d| *d = !*d);
-                    }>
-                        {move || if is_dark.get() { "☀️" } else { "🌙" }}
-                    </button>
-                </div>
             </nav>
+
+            <div class="mobile-header">
+                <button class="hamburger-menu" on:click=move |_| sidebar_open.update(|v| *v = !*v)>
+                    "☰"
+                </button>
+                <div class="mobile-brand">"RigorStarter"</div>
+                <button class="btn-icon" on:click=move |_| {
+                    is_dark.update(|d| *d = !*d);
+                }>
+                    {move || if is_dark.get() { "☀️" } else { "🌙" }}
+                </button>
+            </div>
 
             <PageContent active_page todo_service search />
         </div>

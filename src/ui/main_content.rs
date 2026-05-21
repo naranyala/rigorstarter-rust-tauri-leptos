@@ -5,7 +5,6 @@ use crate::ui::pages::accordion::AccordionDemo;
 use crate::ui::pages::audio_player::AudioPlayerDemoView;
 use crate::ui::pages::audio_recorder::AudioRecorderView;
 use crate::ui::pages::calendar::Calendar;
-use crate::ui::pages::dashboard::Dashboard;
 use crate::ui::pages::drawer::DrawerDemo;
 use crate::ui::pages::image_viewer::ImageViewer;
 use crate::ui::pages::json_todo::JsonTodoDemo;
@@ -41,17 +40,7 @@ pub fn MainContent() -> impl IntoView {
 
     view! {
         <div class="main-content-wrapper">
-            // 1. Dashboard Slot
-            <div style:display=move || if nav_service.active_demo.get().is_none() { "block" } else { "none" }>
-                <Show
-                    when=move || registry_service.is_loading.get()
-                    fallback=move || view! { <Dashboard /> }.into_any()
-                >
-                    <div class="placeholder">"Loading dashboard..."</div>
-                </Show>
-            </div>
-
-            // 2. Accordion Slot
+            // 1. Accordion Slot
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("accordion") { "block" } else { "none" }>
                 <AccordionDemo />
             </div>

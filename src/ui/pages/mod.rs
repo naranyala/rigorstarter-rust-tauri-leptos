@@ -2,7 +2,6 @@ pub mod accordion;
 pub mod audio_player;
 pub mod audio_recorder;
 pub mod calendar;
-pub mod dashboard;
 pub mod drawer;
 pub mod ffi_demo;
 pub mod image_viewer;

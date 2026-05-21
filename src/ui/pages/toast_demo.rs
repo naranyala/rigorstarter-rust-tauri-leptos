@@ -29,7 +29,13 @@ impl ToastContext {
             toast_type,
         };
 
-        self.toasts.update(|toasts| toasts.push(new_toast));
+        self.toasts.update(|toasts| {
+            toasts.push(new_toast);
+            // Limit to 5 toasts to avoid screen clutter
+            if toasts.len() > 5 {
+                toasts.remove(0);
+            }
+        });
 
         // Auto-remove after 3 seconds
         let toasts_clone = self.toasts;

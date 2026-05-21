@@ -60,7 +60,7 @@ pub struct NavigationService {
 
 impl NavigationService {
     pub fn new() -> Self {
-        let (active_demo, set_active_demo) = signal(Option::<String>::None);
+        let (active_demo, set_active_demo) = signal(Some("accordion".to_string()));
         Self {
             active_demo,
             set_active_demo,

@@ -85,3 +85,26 @@ pub fn TabsDemo() -> impl IntoView {
         </div>
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn setup_runtime() -> Owner {
+        let owner = Owner::new();
+        owner.set();
+        owner
+    }
+
+    #[test]
+    fn test_tab_switching_logic() {
+        let _rt = setup_runtime();
+        let (active_tab, set_active_tab) = signal(0);
+
+        assert_eq!(active_tab.get(), 0);
+        set_active_tab.set(1);
+        assert_eq!(active_tab.get(), 1);
+        set_active_tab.set(2);
+        assert_eq!(active_tab.get(), 2);
+    }
+}
