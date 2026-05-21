@@ -1,4 +1,4 @@
-use crate::services::{NavigationService, RegistryService, TodoService};
+use crate::services::{NavigationService, RegistryService};
 use crate::ui::codeblock::CodeBlockView;
 use crate::ui::lightbox::Lightbox;
 use crate::ui::pages::accordion::AccordionDemo;
@@ -24,7 +24,6 @@ pub fn MainContent() -> impl IntoView {
         use_context::<RegistryService>().expect("RegistryService should be provided");
     let nav_service =
         use_context::<NavigationService>().expect("NavigationService should be provided");
-    let todo_service = use_context::<TodoService>().expect("TodoService should be provided");
 
     // Memoize the current item to prevent re-searching the registry on every render
     let current_item = Memo::new(move |_| {
@@ -109,12 +108,7 @@ pub fn MainContent() -> impl IntoView {
             <div style:display=move || if nav_service.active_demo.get().as_deref() == Some("todo") { "block" } else { "none" }>
                 {move || {
                     view! {
-                        <TodoDemo
-                            items=todo_service.items
-                            on_add=Callback::new(move |title| todo_service.add_todo(title))
-                            on_toggle=Callback::new(move |id| todo_service.toggle_todo(id))
-                            on_delete=Callback::new(move |id| todo_service.delete_todo(id))
-                        />
+                        <TodoDemo />
                     }
                 }}
             </div>

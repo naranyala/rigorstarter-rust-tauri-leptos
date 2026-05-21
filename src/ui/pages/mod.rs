@@ -15,3 +15,20 @@ pub mod thirdparty;
 pub mod toast_demo;
 pub mod todo_demo;
 pub mod tree_view;
+
+pub use accordion::AccordionDemo;
+pub use audio_player::AudioPlayerDemoView;
+pub use audio_recorder::AudioRecorderView;
+pub use calendar::Calendar;
+pub use drawer::DrawerDemo;
+pub use ffi_demo::FfiDemo;
+pub use image_viewer::ImageViewer;
+pub use json_todo::JsonTodoDemo;
+pub use markdown_demo::MarkdownDemo;
+pub use microphone::MicrophoneDemo;
+pub use table_demo::TableDemo;
+pub use tabs::TabsDemo;
+
+pub use toast_demo::ToastDemo;
+pub use todo_demo::TodoDemo;
+pub use tree_view::TreeViewDemo;

@@ -131,12 +131,10 @@ pub mod event_bus;
 pub mod file_system;
 pub mod sidebar;
 pub mod storage;
-pub mod todo;
 
 pub use error_service::{ErrorService, ErrorSeverity};
 pub use file_system::AppFileSystem;
 pub use sidebar::SidebarService;
-pub use todo::TodoService;
 
 #[cfg(test)]
 mod tests {

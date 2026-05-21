@@ -1,5 +1,4 @@
 use crate::app::ActivePage;
-use crate::services::TodoService;
 use crate::ui::pages::accordion::AccordionDemo;
 use crate::ui::pages::audio_player::AudioPlayerDemoView;
 use crate::ui::pages::audio_recorder::AudioRecorderView;
@@ -21,10 +20,9 @@ use leptos::prelude::*;
 #[component]
 pub fn PageRenderer() -> impl IntoView {
     let active_page = use_context::<ActivePage>().expect("ActivePage not provided");
-    let todo_service = use_context::<TodoService>();
 
     view! {
-        <div style:display=move || if active_page.0.get().is_some() { "block" } else { "none" }>
+        <div style:display=move || if active_page.get().is_some() { "block" } else { "none" }>
             <div class="page-content">
                 <div style="padding: 1rem 2rem 0;">
                     <button
@@ -32,13 +30,13 @@ pub fn PageRenderer() -> impl IntoView {
                         style="font-size: 0.85rem; padding: 0.35rem 0.9rem;"
                         on:click=move |_| {
                             leptos::logging::log!("going back to main view");
-                            active_page.0.set(None);
+                            active_page.set(None);
                         }
                     >
                         "← Back to Main"
                     </button>
                 </div>
-                {move || match active_page.0.get() {
+                {move || match active_page.get() {
                     Some("accordion") => view! { <AccordionDemo /> }.into_any(),
                     Some("tabs") => view! { <TabsDemo /> }.into_any(),
                     Some("drawer") => view! { <DrawerDemo /> }.into_any(),
@@ -54,19 +52,7 @@ pub fn PageRenderer() -> impl IntoView {
                     Some("audio_player") => view! { <AudioPlayerDemoView /> }.into_any(),
                     Some("audio_recorder") => view! { <AudioRecorderView /> }.into_any(),
                     Some("microphone") => view! { <MicrophoneDemo /> }.into_any(),
-                    Some("todo_demo") => {
-                        match todo_service {
-                            Some(svc) => view! {
-                                <TodoDemo
-                                    items=svc.items
-                                    on_add=Callback::new(move |title| svc.add_todo(title))
-                                    on_toggle=Callback::new(move |id| svc.toggle_todo(id))
-                                    on_delete=Callback::new(move |id| svc.delete_todo(id))
-                                />
-                            }.into_any(),
-                            None => view! { <div class="page-not-found"><h2>"Todo service unavailable"</h2></div> }.into_any(),
-                        }
-                    },
+                    Some("todo_demo") => view! { <TodoDemo /> }.into_any(),
                     _ => view! { <div class="page-not-found"><h2>"Page not found"</h2></div> }.into_any(),
                 }}
             </div>
