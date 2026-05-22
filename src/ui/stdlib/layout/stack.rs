@@ -8,23 +8,20 @@ pub enum StackDirection {
 
 #[component]
 pub fn Stack(
-    #[prop(into)] direction: MaybeInto<StackDirection>,
-    #[prop(into)] gap: MaybeInto<String>,
+    #[prop(into)] direction: Signal<StackDirection>,
+    #[prop(into)] gap: Signal<String>,
     children: Children,
 ) -> impl IntoView {
-    let direction = direction.into();
-    let gap = gap.into();
-    
-    let flex_dir = match direction {
+    let flex_dir = move || match direction.get() {
         StackDirection::Vertical => "column",
         StackDirection::Horizontal => "row",
     };
 
+    let gap_val = move || gap.get();
+
     view! {
-        <div 
-            style=move || format!("display: flex; flex-direction: {}; gap: {};")
-            flex_dir
-            gap
+        <div
+            style=move || format!("display: flex; flex-direction: {}; gap: {};", flex_dir(), gap_val())
         >
             {children()}
         </div>

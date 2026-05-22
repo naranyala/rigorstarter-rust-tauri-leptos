@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-CSS_DIR="styles"
+CSS_DIR="src/styles"
 TEMPLATE_FILE="index.html.default"
 TARGET_FILE="index.html"
 PLACEHOLDER="<!-- CSS_IMPORTS -->"
@@ -39,7 +39,7 @@ done < "$TEMPLATE_FILE"
 mv "$TMP_FILE" "$TARGET_FILE"
 
 # Copy third-party vendor libraries from node_modules to public/
-VENDOR_DIR="public/vendor"
+VENDOR_DIR="src/public/vendor"
 rm -rf "$VENDOR_DIR"
 
 # Leaflet

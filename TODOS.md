@@ -1,5 +1,13 @@
 # Project Roadmap and TODOs
 
+## ✅ Completed
+- [x] Flattened frontend project structure for better maintainability.
+- [x] Implemented a reusable UI Stdlib (components, hooks, layouts).
+- [x] Added collapsible categories and reactive counts to the sidebar.
+- [x] Expanded demo library with Modal, Tooltip, WebWorker, and WASM demos.
+- [x] Implemented comprehensive testing for core logic and services.
+- [x] Refined documentation for architecture and frontend development.
+
 ## Frontend Improvements
 - Add a more robust routing system for nested component views.
 - Enhance the search overlay with keyboard shortcuts.
@@ -12,7 +20,6 @@
 - Implement a caching layer for utility source code retrieval.
 
 ## Testing and Quality
-- Increase unit test coverage for the registry logic.
 - Add integration tests for Tauri commands.
 - Implement automated build checks in the CI pipeline.
 - Perform a full audit of file system access for security vulnerabilities.

@@ -17,10 +17,11 @@ Located in `src/services/`, the service layer acts as the ViewModel:
 - **Dependency Injection**: Services are provided via Leptos Context, allowing components to access shared state without prop-drilling.
 - **Orchestration**: Coordinates between the Core logic and the Tauri backend.
 
-### 3. View (Components)
-Located in `src/components/`, the view layer is responsible for:
-- **Reactive UI**: Rendering components based on the state provided by services.
-- **Event Handling**: Triggering service methods in response to user interaction.
+### 3. View (UI Layer)
+Located in `src/ui/`, the view layer is divided into:
+- **Pages (`src/ui/pages/`)**: High-level views and demos. These are now flattened for better maintainability.
+- **Stdlib (`src/ui/stdlib/`)**: A library of reusable UI primitives (components, hooks, and layouts) used across all pages.
+- **Common UI**: Global components like the Navbar and Sidebar.
 
 ## Communication Layer
 

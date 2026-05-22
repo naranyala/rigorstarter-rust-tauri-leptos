@@ -1,8 +1,12 @@
 use leptos::prelude::*;
 
+pub mod component_tests;
+pub mod storage_tests;
+
 #[cfg(test)]
 pub mod reactivity {
     use super::*;
+    // ...
 
     pub fn test_runtime() -> Owner {
         let owner = Owner::new();

@@ -1,10 +1,9 @@
 use leptos::prelude::*;
-use web_sys::Storage;
 
 /// A hook for synchronizing a signal with browser localStorage.
 pub fn use_storage<T>(key: &'static str, default_value: T) -> RwSignal<T>
 where
-    T: 'static + Clone + serde::Serialize + for<'de> serde::Deserialize<'de>,
+    T: 'static + Clone + serde::Serialize + for<'de> serde::Deserialize<'de> + Send + Sync,
 {
     let window = web_sys::window().expect("no global `window` exists");
     let storage = window

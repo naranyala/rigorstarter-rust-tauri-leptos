@@ -53,4 +53,20 @@ Detailed guides are available in the `docs/` directory:
 - Architecture: Overview of the MVVM system design.
 - Frontend: Guide for creating themed components.
 - Backend: Guide for adding commands and utilities.
+- Stdlib: Guide to reusable UI primitives.
+- Testing: Strategy for ensuring app stability.
 - Deployment: Build and distribution instructions.
+
+## Contributing
+
+To contribute to the project:
+1. Clone the repository.
+2. Install dependencies (Rust, Node.js, Tauri CLI).
+3. Run the development environment:
+   ```bash
+   sh run.sh
+   ```
+4. Run the test suite:
+   ```bash
+   cargo test
+   ```

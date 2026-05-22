@@ -122,6 +122,19 @@ impl ThemeService {
     }
 }
 
+#[derive(Clone, Copy)]
+pub struct TodoService {
+    pub items: ReadSignal<Vec<crate::core::models::TodoItem>>,
+    pub set_items: WriteSignal<Vec<crate::core::models::TodoItem>>,
+}
+
+impl TodoService {
+    pub fn new() -> Self {
+        let (items, set_items) = signal(Vec::new());
+        Self { items, set_items }
+    }
+}
+
 pub mod audio;
 pub mod browser;
 pub mod dom;

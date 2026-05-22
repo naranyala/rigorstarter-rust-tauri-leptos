@@ -18,18 +18,14 @@ pub enum ButtonSize {
 
 #[component]
 pub fn Button(
-    #[prop(into)] variant: MaybeInto<ButtonVariant>,
-    #[prop(into)] size: MaybeInto<ButtonSize>,
-    #[prop(into)] disabled: MaybeInto<bool>,
-    #[prop(into)] on_click: Option<Callback<ev::MouseEvent>>,
-    #[prop(into)] class: MaybeInto<String>,
+    #[prop(into)] variant: ButtonVariant,
+    #[prop(into)] size: ButtonSize,
+    #[prop(into)] disabled: bool,
+    #[prop(into)] on_click: Option<Callback<leptos::ev::MouseEvent>>,
+    #[prop(into)] class: String,
+    #[prop(into)] button_type: Option<String>,
     children: Children,
 ) -> impl IntoView {
-    let variant = variant.into();
-    let size = size.into();
-    let disabled = disabled.into();
-    let class = class.into();
-
     let variant_class = match variant {
         ButtonVariant::Primary => "btn-primary",
         ButtonVariant::Secondary => "btn-secondary",
@@ -44,13 +40,16 @@ pub fn Button(
         ButtonSize::Large => "btn-lg",
     };
 
+    let b_type = button_type.unwrap_or_else(|| "button".to_string());
+
     view! {
         <button
+            type=b_type
             class=move || format!("btn {} {} {}", variant_class, size_class, class)
             disabled=disabled
             on:click=move |ev| {
                 if let Some(cb) = on_click {
-                    cb.call(ev);
+                    cb.run(ev);
                 }
             }
         >

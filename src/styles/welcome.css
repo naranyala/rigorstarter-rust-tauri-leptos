@@ -22,21 +22,6 @@
     margin: 0;
 }
 
-.category-section {
-    margin-bottom: 3rem;
-}
-
-.category-title {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--primary);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-bottom: 1.25rem;
-    padding-left: 0.5rem;
-    border-left: 4px solid var(--primary);
-}
-
 .welcome-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -48,26 +33,19 @@
     border: 1px solid var(--border-color);
     border-radius: 1rem;
     padding: 1.5rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    align-items: center;
     height: 100%;
     box-shadow: var(--shadow);
-}
-
-.welcome-card:hover {
-    transform: translateY(-5px);
-    border-color: var(--primary);
-    box-shadow: var(--shadow-lg);
-    background-color: var(--secondary-bg);
 }
 
 .welcome-card-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    width: 100%;
     margin-bottom: 1rem;
 }
 
@@ -77,30 +55,22 @@
     color: var(--text-main);
 }
 
+.welcome-card-count {
+    background: var(--primary);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+}
+
 .welcome-card-desc {
     font-size: 0.9rem;
     color: var(--text-muted);
     line-height: 1.5;
     margin-bottom: 1.5rem;
     flex-grow: 1;
-}
-
-.welcome-card-footer {
-    display: flex;
-    align-items: center;
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.welcome-card-footer::after {
-    content: "→";
-    margin-left: 0.5rem;
-    transition: transform 0.2s ease;
-}
-
-.welcome-card:hover .welcome-card-footer::after {
-    transform: translateX(4px);
+    width: 100%;
+    text-align: left;
 }
 
 /* Responsive adjustments for mobile */
@@ -109,30 +79,27 @@
         padding: 1rem;
     }
     .welcome-title {
-        font-size: 1.3rem;
+        font-size: 1.5rem;
     }
     .welcome-subtitle {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
     }
     .welcome-grid {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        grid-template-columns: 1fr;
         gap: 1rem;
     }
     .welcome-card {
-        padding: 0.8rem;
+        padding: 1rem;
     }
     .welcome-card-name {
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
     .welcome-card-desc {
-        font-size: 0.8rem;
-        margin-bottom: 1rem;
-    }
-    .welcome-card-footer {
-        font-size: 0.7rem;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
     }
     .welcome-card-header {
-        margin-bottom: 0.75rem;
+        margin-bottom: 0.5rem;
     }
 }
 
@@ -140,8 +107,9 @@
 @media (max-width: 320px) {
     .welcome-grid {
         grid-template-columns: 1fr;
+        gap: 0.5rem;
     }
     .welcome-card {
-        padding: 0.7rem;
+        padding: 0.8rem;
     }
 }

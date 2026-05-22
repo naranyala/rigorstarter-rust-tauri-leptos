@@ -18,6 +18,24 @@ pub struct Page {
 pub const PAGES: &[Page] = &[
     Page {
         info: PageInfo {
+            name: "Dashboard",
+            id: "dashboard",
+            category: "General",
+            desc: "Responsive system metrics",
+        },
+        component: || view! { <DashboardDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "Preferences",
+            id: "preferences",
+            category: "General",
+            desc: "User settings and persistence",
+        },
+        component: || view! { <PreferencesDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
             name: "Welcome",
             id: "welcome",
             category: "General",
@@ -90,12 +108,57 @@ pub const PAGES: &[Page] = &[
     },
     Page {
         info: PageInfo {
+            name: "Advanced Form",
+            id: "advanced_form",
+            category: "Forms",
+            desc: "Comprehensive stdlib form system",
+        },
+        component: || view! { <AdvancedFormDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "Form Validation",
+            id: "form_demo",
+            category: "Components",
+            desc: "Reactive input validation",
+        },
+        component: || view! { <FormDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
             name: "Toast",
             id: "toast_demo",
             category: "Components",
             desc: "Notification toast messages",
         },
         component: || view! { <ToastDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "Modal",
+            id: "modal_demo",
+            category: "Components",
+            desc: "Overlay dialogs",
+        },
+        component: || view! { <ModalDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "Tooltip",
+            id: "tooltip_demo",
+            category: "Components",
+            desc: "Informational popups",
+        },
+        component: || view! { <TooltipDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "Markdown Tree",
+            id: "markdown_tree",
+            category: "Exploration",
+            desc: "Tree-based markdown navigation",
+        },
+        component: || view! { <MarkdownTreeDemo /> }.into_any(),
     },
     Page {
         info: PageInfo {
@@ -160,6 +223,24 @@ pub const PAGES: &[Page] = &[
         },
         component: || view! { <MicrophoneDemo /> }.into_any(),
     },
+    Page {
+        info: PageInfo {
+            name: "Web Worker",
+            id: "web_worker_demo",
+            category: "Exploration",
+            desc: "Background computation",
+        },
+        component: || view! { <WebWorkerDemo /> }.into_any(),
+    },
+    Page {
+        info: PageInfo {
+            name: "WebAssembly",
+            id: "wasm_demo",
+            category: "Exploration",
+            desc: "High-performance tasks",
+        },
+        component: || view! { <WasmDemo /> }.into_any(),
+    },
 ];
 
 pub fn filter_pages(query: &str) -> Vec<PageInfo> {
@@ -196,5 +277,6 @@ pub fn grouped_pages() -> Vec<(&'static str, Vec<&'static PageInfo>)> {
             groups.push((page.info.category, vec![&page.info]));
         }
     }
+    groups.push(("Archives", vec![]));
     groups
 }

@@ -3,29 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <title>Tauri + Leptos App</title>
-    <link data-trunk rel="css" href="styles/base.css" />
-    <link data-trunk rel="css" href="styles/accordion.css" />
-    <link data-trunk rel="css" href="styles/common.css" />
-    <link data-trunk rel="css" href="styles/drawer.css" />
-    <link data-trunk rel="css" href="styles/json_todo_demo.css" />
-    <link data-trunk rel="css" href="styles/layout.css" />
-    <link data-trunk rel="css" href="styles/markdown_demo.css" />
-    <link data-trunk rel="css" href="styles/modal.css" />
-    <link data-trunk rel="css" href="styles/navbar.css" />
-    <link data-trunk rel="css" href="styles/search.css" />
-    <link data-trunk rel="css" href="styles/table_demo.css" />
-    <link data-trunk rel="css" href="styles/tabs.css" />
-    <link data-trunk rel="css" href="styles/theme_demo.css" />
-    <link data-trunk rel="css" href="styles/thirdparty.css" />
-    <link data-trunk rel="css" href="styles/tree_view_demo.css" />
-<link data-trunk rel="css" href="styles/welcome.css" />
-<link data-trunk rel="css" href="styles/welcome.css" />
-    <link data-trunk rel="css" href="styles/todo_demo.css" />
-    <link data-trunk rel="css" href="styles/toast_demo.css" />
-    <link data-trunk rel="css" href="styles/utility.css" />
+    <!-- CSS_IMPORTS -->
     <link rel="stylesheet" href="vendor/prism/prism-tomorrow.min.css" />
     <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
-    <link data-trunk rel="copy-dir" href="public" />
+    <link data-trunk rel="copy-dir" href="src/public" />
     <link data-trunk rel="rust" data-wasm-opt="z" />
   </head>
   <body>

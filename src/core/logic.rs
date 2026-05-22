@@ -122,6 +122,39 @@ mod tests {
     }
 
     #[test]
+    fn test_filter_whitespace_query() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, "   ", "component");
+        // "   ".to_lowercase().contains("") is true.
+        // Current implementation treats whitespace as a search term.
+        assert_eq!(res.len(), 2);
+    }
+
+    #[test]
+    fn test_filter_extremely_long_query() {
+        let reg = mock_registry();
+        let res = filter_registry(&reg, &"a".repeat(1000), "component");
+        assert!(res.is_empty());
+    }
+
+    #[test]
+    fn test_filter_large_dataset_performance() {
+        let mut reg = Vec::new();
+        for i in 0..10000 {
+            reg.push(RegistryItem {
+                name: format!("Item {}", i),
+                id: format!("id_{}", i),
+                category: "component".into(),
+                status: "pinned".into(),
+                line_count: i,
+            });
+        }
+        let res = filter_registry(&reg, "Item 9999", "component");
+        assert_eq!(res.len(), 1);
+        assert_eq!(res[0].0, "Item 9999");
+    }
+
+    #[test]
     fn test_sort_by_status() {
         let reg = vec![
             RegistryItem {

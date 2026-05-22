@@ -1,5 +1,7 @@
 use crate::services::audio::AudioViewModel;
 use crate::services::{NavigationService, RegistryService};
+use crate::ui::stdlib::components::nav_category::NavCategory;
+use crate::ui::stdlib::utils::event_target_value;
 use leptos::prelude::*;
 use wasm_bindgen::closure::Closure;
 use wasm_bindgen::JsCast;
@@ -185,53 +187,9 @@ pub fn App() -> impl IntoView {
                 </div>
                 <div class="sidebar-content">
                     <div class="sidebar-nav">
-                        // Render all pages statically; filter via reactive style:display.
-                        // This avoids the {move || ...} reactive-block approach which has a
-                        // Leptos 0.7 view-reconciliation initialization issue on first render.
-            {groups.iter().map(|(cat, pages)| {
-                                view! {
-                                    <div style="margin-bottom: 1rem;">
-                                        <div style="font-size: 0.65rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.4rem; padding-left: 0.25rem;">
-                                            {*cat}
-                                        </div>
-                                        <div style="display: flex; flex-direction: column; gap: 2px;">
-                                             {pages.iter().map(|page| {
-                                                 let name = page.name;
-                                                 let page_id = page.id;
-                                                 let cat = page.category;
-                                                 let q = search;
-
-                                                 view! {
-                                                     <button
-                                                         class="page-list-item"
-                                                         style=move || {
-                                                             let query = q.get().to_lowercase();
-                                                             let display = if query.is_empty() || name.to_lowercase().contains(&query) || cat.to_lowercase().contains(&query) {
-                                                                 "block"
-                                                             } else {
-                                                                 "none"
-                                                             };
-                                                             format!("text-align: left; width: 100%; display: {};", display)
-                                                         }
-                                                         on:click=move |_| {
-                                                             leptos::logging::log!("Sidebar click: navigating to: {}", page_id);
-                                                             let ap = active_page;
-                                                             let pid = page_id;
-                                                             let closure = Closure::once_into_js(move || {
-                                                                 ap.set(Some(pid));
-                                                                 sidebar_open.set(false);
-                                                             });
-                                                             let _ = web_sys::window().unwrap().request_animation_frame(closure.as_ref().unchecked_ref());
-                                                         }
-                                                     >
-                                                         <span style="font-weight: 500;">{name}</span>
-                                                     </button>
-                                                 }
-                                             }).collect_view()}
-                                        </div>
-                                    </div>
-                                }
-                            }).collect_view()}
+                        {groups.iter().map(|(cat, pages)| {
+                            view! { <NavCategory cat=*cat pages=pages.clone() search=search active_page=active_page sidebar_open=sidebar_open /> }
+                        }).collect_view()}
                     </div>
                 </div>
             </nav>

@@ -11,5 +11,6 @@ pub mod pages;
 pub mod result_view;
 pub mod search;
 pub mod sidebar;
+pub mod stdlib;
 pub mod utility_code_block;
 pub mod welcome;
